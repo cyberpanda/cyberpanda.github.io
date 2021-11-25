@@ -1,0 +1,93 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --light: whitesmoke;
+  --dark: #080808;
+  --highlight: #d68fd6;
+  --highlight: #006989;
+  --maincolor: #333;
+  --twitterblue: #1da1f2;
+}
+
+html {
+  font-family: Chirp, Arial, Tahoma, Helvetica, Roboto;
+}
+body {
+  background: var(--maincolor);
+  color: white;
+}
+
+header {
+  letter-spacing: 5px;
+  font-weight: bold;
+  color: var(--dark);
+  background: var(--light);
+  width: 100px;
+  margin: 10px 20px 0px 40px;
+  border-radius: 5px 0px 34px 10px;
+}
+.post-container {
+  padding: 0.4em 1.2em;
+}
+
+.post,
+button {
+  -webkit-box-shadow: 2px 2px 4px 0px var(--dark);
+  box-shadow: 2px 2px 4px 0px var(--dark);
+  border-radius: 5px;
+}
+
+.post {
+  background: var(--light);
+  padding: 1em;
+  display: grid;
+  grid-template-columns: 1fr minmax(50px, 250px);
+  min-width: 400px;
+  max-width: 700px;
+  margin: 2em auto;
+  color: var(--dark);
+}
+
+.content {
+  display: grid;
+  grid-template-rows: 20px 1fr;
+  padding: 0 1em 0 0;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  padding: 1em 2em;
+  font-weight: 700;
+  justify-self: start;
+  background-color: var(--dark);
+  color: var(--light);
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+
+footer {
+  background: var(--dark);
+  height: 200px;
+  text-align: center;
+  padding-top: 75px;
+}
+
+footer a {
+  text-decoration: inherit;
+  box-shadow: 0px 0px 1px 1px var(--twitterblue);
+  border-radius: 5px;
+  padding: 5px;
+  margin-left: 10px;
+  color: var(--twitterblue);
+}
+footer a:hover {
+  background: var(--twitterblue);
+  color: var(--dark);
+}
