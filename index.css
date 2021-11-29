@@ -76,7 +76,8 @@ footer a {
   box-shadow: 0px 0px 1px 1px var(--twitterblue);
   border-radius: 5px;
   padding: 5px;
-  margin-left: 10px; /*space between copyright and twitter btn*/
+  padding-bottom:0 auto;
+  margin-left: 10px; /*space between copyright and twitterbtn*/
   color: var(--twitterblue);
 }
 footer a:hover {
