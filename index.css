@@ -6,7 +6,6 @@
   --light: whitesmoke;
   --dark: #080808;
   --highlight: #d68fd6;
-  --highlight: #006989;
   --maincolor: #333;
   --twitterblue: #1da1f2;
 }
@@ -15,6 +14,7 @@ html {
   font-family: Chirp, Arial, Tahoma, Helvetica, Roboto;
 }
 body {
+  margin 0;
   background: var(--maincolor);
   color: white;
 }
@@ -28,15 +28,17 @@ header {
   margin: 10px 20px 0px 40px;
   border-radius: 5px 0px 34px 10px;
 }
-.post-container {
-  padding: 0.4em 1.2em;
+h1 {
 }
 
-.post,
-button {
-  -webkit-box-shadow: 2px 2px 4px 0px var(--dark);
-  box-shadow: 2px 2px 4px 0px var(--dark);
-  border-radius: 5px;
+main {
+  border: 5px var(--dark) solid;
+  border-left:0px;
+  border-right:0px;
+  border-bottom: dashed;
+}
+.post-container {
+  padding: 0.4em 1.2em;
 }
 
 .post {
@@ -46,7 +48,7 @@ button {
   grid-template-columns: 1fr minmax(50px, 250px);
   min-width: 400px;
   max-width: 700px;
-  margin: 2em auto;
+  margin:0 auto;
   color: var(--dark);
 }
 
@@ -56,16 +58,6 @@ button {
   padding: 0 1em 0 0;
 }
 
-button {
-  cursor: pointer;
-  font-family: inherit;
-  border: none;
-  padding: 1em 2em;
-  font-weight: 700;
-  justify-self: start;
-  background-color: var(--dark);
-  color: var(--light);
-}
 
 h2 {
   margin-top: 0;
