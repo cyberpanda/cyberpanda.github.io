@@ -14,7 +14,6 @@ html {
   font-family: Chirp, Arial, Tahoma, Helvetica, Roboto;
 }
 body {
-  margin 0;
   background: var(--maincolor);
   color: white;
 }
