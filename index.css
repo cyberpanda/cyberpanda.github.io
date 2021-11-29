@@ -65,10 +65,12 @@ h2 {
 }
 
 footer {
-  background: var(--dark);
-  height: 200px;
+  column-count:2;
+  column-gap: 30vw;
+  height: 170px;
   text-align: center;
-  padding-top: 75px;
+  background-color: var(--dark);
+  vertical-align: middle;
 }
 
 footer a {
