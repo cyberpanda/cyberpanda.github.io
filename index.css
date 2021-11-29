@@ -69,6 +69,8 @@ footer {
   height: 200px;
   text-align: center;
   padding-top: 75px;
+  vertical-align: middle;
+  margin-top: -200px;
 }
 
 footer a {
