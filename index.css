@@ -1,88 +1,91 @@
-* {
-  box-sizing: border-box;
-}
-
 :root {
-  --light: whitesmoke;
-  --dark: #080808;
-  --highlight: #d68fd6;
-  --maincolor: #333;
-  --twitterblue: #1da1f2;
+  --color1: #000;
+  --color2: #fff;
+  --c: #0ff,
 }
 
-html {
-  font-family: Chirp, Arial, Tahoma, Helvetica, Roboto;
-}
 body {
-  margin 0;
-  background: var(--maincolor);
-  color: white;
+  background: #000;
+  color: #fff;
+  font-family: Helvetica;
+  margin: 0;
+  font-size: 21px;
 }
-
 header {
   letter-spacing: 5px;
   font-weight: bold;
-  color: var(--dark);
-  background: var(--light);
-  width: 100px;
-  margin: 10px 20px 0px 40px;
-  border-radius: 5px 0px 34px 10px;
-}
-h1 {
+  color: #0ff;
+  border-bottom: solid 5px #0ff;
+  width: 500px;
+  margin-bottom:2em;
+
 }
 
-main {
-  border: 5px var(--dark) solid;
-  border-left:0px;
-  border-right:0px;
-  border-bottom: dashed;
+* h3 {
+  border-bottom: solid 5px #0ff;
+  font-size: 28px;
 }
-.post-container {
-  padding: 0.4em 1.2em;
-}
-
-.post {
-  background: var(--light);
-  padding: 1em;
-  display: grid;
-  grid-template-columns: 1fr minmax(50px, 250px);
-  min-width: 400px;
-  max-width: 700px;
-  margin:0 auto;
-  color: var(--dark);
+.columns {
+  margin-top: -20px;
+  text-align: right;
+  display: flex;
+  height: 180px;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  
+  
 }
 
-.content {
-  display: grid;
-  grid-template-rows: 20px 1fr;
-  padding: 0 1em 0 0;
+.column {
+  padding: 0.5em;
+  margin: auto;
+  border: #fff dashed;
+}
+.column:hover {
+  background: #fff;
+  color: #000;
 }
 
-
-h2 {
-  margin-top: 0;
-  font-size: 1.5rem;
+/*changes another element as well, in this case h3 with id column-heading*/
+.column:hover > .column-heading {
+  background: #fff;
+  color: #0ff;
+  border-bottom: dashed 5px #000;
 }
-
 footer {
   column-count:2;
   column-gap: 30vw;
   height: 170px;
+  margin-top:50px;
   text-align: center;
-  background-color: var(--dark);
+  background-color: #09080b;
+  color: #ccc;
   vertical-align: middle;
 }
 
-footer a {
+footer h3 {
+  text-align: left;
+  font-size: 48px;
+  margin-left: 30px;
+}
+
+footer #left {
+  text-align: left;
+  color: white;
+  font-size: 28px;
+  display: inline-block;
+  margin-top: 62px;
+}
+footer #twitterbtn {
   text-decoration: inherit;
-  box-shadow: 0px 0px 1px 1px var(--twitterblue);
+  box-shadow: 0px 0px 1px 1px #1da1f2;
   border-radius: 5px;
   padding: 5px;
   padding-bottom:0 auto;
   margin-left: 10px; /*space between copyright and twitterbtn*/
-  color: var(--twitterblue);
+  color: #1da1f2;
 }
-footer a:hover {
-  background: var(--twitterblue);
-  color: var(--dark);
+footer #twitterbtn:hover {
+  background: #1da1f2;
+  color: #000;
 }
