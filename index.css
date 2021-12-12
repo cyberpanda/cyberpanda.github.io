@@ -64,7 +64,6 @@ body {
   font-size: 15px;
 }
 .columns {
-  margin-top: -20px;
   text-align: right;
   display: flex;
   height: 180px;
@@ -87,7 +86,7 @@ body {
 .column:hover > .column-heading {
   background: #0f0;
   color: #0ff;
-  border-bottom: dashed 5px #000;
+  border-bottom: dashed 5px var(--bamboo);
 }
 footer {
   position: fixed;
