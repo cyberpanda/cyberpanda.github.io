@@ -90,15 +90,20 @@ body {
   border-bottom: dashed 5px #000;
 }
 footer {
-  column-count: 2;
+  position: fixed;
+  padding: 10px 10px 0px 10px;
+  bottom: 0;
+  width: 100%;
+  column-count:2;
   column-gap: 30vw;
   height: 170px;
-  margin-top: 50px;
+  margin-top:50px;
   text-align: center;
   background-color: #09080b;
   color: #ccc;
   vertical-align: middle;
 }
+
 footer h3 {
   text-align: left;
   font-size: 48px;
