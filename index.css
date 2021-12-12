@@ -1,23 +1,67 @@
-body {
-  background: #000;
-  color: #fff;
-  font-family: Helvetica;
+:root {
+  --bamboo: #2c6705;
+  --bg: #333;
+  --b: #000;
+  --y: yellow;
+  --w: #f9f6ee; /*will use gradient later*/
+  --gradient1: linear-gradient(25deg, #ff1234 3%, #a2345f 40%, #281ff2);
+}
+main {
+  background: black;
+  color: var(--w);
+}
+nav {
   margin: 0;
-  font-size: 21px;
+  overflow: hidden;
+  background: var(--bamboo);
 }
-header {
-  letter-spacing: 5px;
-  font-weight: bold;
-  color: #0ff;
-  border-bottom: solid 5px #0ff;
-  width: 500px;
-  margin-bottom:2em;
-
+#logo a img {
+  width: 5.5em;
+  height: 5.5em;
+  object-fit: cover;
+  border: 0.5em solid #0f0;
+  border-radius: 5em;
 }
-
-* h3 {
-  border-bottom: solid 5px #0ff;
-  font-size: 28px;
+#logo {
+  border-style: none; /*TODO fix hover*/
+  font-size: 12px;
+}
+#logo:hover {
+  /*stupid hot fixTODO: fix this later*/
+  background-color: var(--bamboo);
+}
+#menue {
+  background-color: var(--b);
+  margin: 0;
+  overflow: hidden;
+  border-radius: 10px;
+} /*list element style*/
+#menue ul {
+  margin: 0;
+  padding: 0;
+}
+#menue ul li {
+  /* This allow to arrange list items in a row, without using float */
+  display: inline-block;
+  list-style-type: none;
+} /*first level item style*/
+.columns #menue > ul > li > a {
+  color: var(--w);
+  display: block;
+  line-height: 2em;
+  padding: 0.5em 0.5em;
+  text-decoration: none;
+}
+#menue > ul > li > a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-decoration-color: #0f0;
+}
+body {
+  margin: 2 auto;
+  padding: 0;
+  font-family: Helvetica neue, Tahoma, Roboto, Arial;
+  font-size: 15px;
 }
 .columns {
   margin-top: -20px;
@@ -26,47 +70,40 @@ header {
   height: 180px;
   flex-flow: row wrap;
   justify-content: space-around;
-  
-  
 }
-
+#menue {
+  padding: 0.5em;
+  margin: auto;
+}
 .column {
   padding: 0.5em;
   margin: auto;
-  border: #fff dashed;
+  border: #0f0 dashed;
 }
 .column:hover {
-  background: #fff;
-  color: #000;
+  background: var(--bamboo);
+  color: var(--w);
 }
-
-/*changes another element as well, in this case h3 with id column-heading*/
 .column:hover > .column-heading {
-  background: #fff;
+  background: #0f0;
   color: #0ff;
   border-bottom: dashed 5px #000;
 }
 footer {
-  position: fixed;
-  padding: 10px 10px 0px 10px;
-  bottom: 0;
-  width: 100%;
-  column-count:2;
+  column-count: 2;
   column-gap: 30vw;
   height: 170px;
-  margin-top:50px;
+  margin-top: 50px;
   text-align: center;
   background-color: #09080b;
   color: #ccc;
   vertical-align: middle;
 }
-
 footer h3 {
   text-align: left;
   font-size: 48px;
   margin-left: 30px;
 }
-
 footer #left {
   text-align: left;
   color: white;
@@ -79,11 +116,11 @@ footer #twitterbtn {
   box-shadow: 0px 0px 1px 1px #1da1f2;
   border-radius: 5px;
   padding: 5px;
-  padding-bottom:0 auto;
+  padding-bottom: 0 auto;
   margin-left: 10px; /*space between copyright and twitterbtn*/
   color: #1da1f2;
 }
 footer #twitterbtn:hover {
   background: #1da1f2;
-  color: #000;
+  color: var(--b);
 }
