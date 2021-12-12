@@ -79,13 +79,9 @@ body {
   margin: auto;
   border: #0f0 dashed;
 }
-.column:hover {
-  background: var(--bamboo);
-  color: var(--w);
-}
+
 .column:hover > .column-heading {
-  background: #0f0;
-  color: #0ff;
+  color: #0f0;
   border-bottom: dashed 5px var(--bamboo);
 }
 footer {
