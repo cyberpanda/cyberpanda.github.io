@@ -6,6 +6,11 @@
   --w: #f9f6ee; /*will use gradient later*/
   --gradient1: linear-gradient(25deg, #ff1234 3%, #a2345f 40%, #281ff2);
 }
+body{
+  /*HOT FIX: otherwise it displays a white block*/
+  background:var(--b)
+}
+
 main {
   background: black;
   color: var(--w);
