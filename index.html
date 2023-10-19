@@ -1,55 +1,281 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-  <title>CyberPanda</title>
-  <link href="index.css" rel="stylesheet">
-  <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVE Table</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, rgba(107, 11, 234, 0.8), rgba(18, 33, 36, 0.8));
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container-box {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 90%;
+            margin-top: 20px; 
+        }
+
+        .navbar {
+            background-color: transparent;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-bar {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar input {
+            width: 33%;
+            padding: 8px;
+            font-size: 14px;
+            border: none;
+            background: rgba(12, 15, 24, 0.5);
+            color: #fff;
+        }
+
+        select#refreshInterval {
+            border: none;
+            background-color: rgba(12, 15, 24, 0.5);
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .refresh-button button {
+            background-color: #0074e4;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .refresh-button button:hover {
+            background-color: #005bc0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: rgba(12, 15, 24, 0.5);
+            color: #fff;
+        }
+
+        th, td {
+            border: 1px solid #1e273d;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #000;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        th i {
+            margin-left: 5px;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(30, 39, 61, 0.5);
+        }
+
+        tr:hover {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .severity-critical { background-color: #ff1744; }
+        .severity-high { background-color: #fdd835; }
+        .severity-medium { background-color: #00e676; }
+        .severity-low { background-color: #ffffff; color: #000; }
+        .severity-score {
+            font-weight: bold;
+        }
+
+        .search-bar input::placeholder {
+            color: #aaa;
+        }
+
+        td a {
+            color: #6bb5cc;
+            transition: color 0.3s; 
+        }
+
+        td a:hover{
+            color:rgb(99, 71, 150);
+        }
+
+    </style>
 </head>
-
 <body>
-  <nav>
-    <div class="columns">
-
-      <div class="column" id="logo">
-        <a href="index.html"><img src="https://tryhackme-images.s3.amazonaws.com/user-avatars/4693c99d02f21212cd4c3f4e9f9e5d9e.jpg" alt="logo of the site"></a>
-
-      </div>
-      <div id="menue">
-        <ul>
-          <li><a href="todo">HOME</a></li>
-          <li><a href="todo">LINKS</a></li>
-          <li><a href="todo">SKILLS</a></li>
-          <li><a href="todo">ABOUT</a></li>
-        </ul>
-
-      </div>
-
+    <div class="container">
+        <div class="container-box">
+                        <div class="navbar">
+                <div class="logo">
+                    <!-- Placeholder for Logo -->
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search CVEs" onkeyup="searchCVEs()">
+                    <p style="font-size: 12px; margin: 10px 0; padding-left: 20px;">Made with ❤️ by CyberPanda</p>
+                    </a>
+                    
+                </div>
+                
+                <div class="refresh-button">
+                    <label for="refreshInterval" style="color: #fff;">Refresh every:</label>
+                    <select id="refreshInterval" onchange="setRefreshInterval()">
+                        <option value="300000">5 mins</option>
+                        <option value="600000">10 mins</option>
+                        <option value="1800000">30 mins</option>
+                        <option value="3600000">1 hour</option>
+                    </select>
+                    <button onclick="refreshData()">Refresh Now</button>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">CVE Number<i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable(1)">Severity<i class="fas fa-sort"></i></th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="cveTable">
+                    <!-- CVE data will be added here using JavaScript -->
+                </tbody>
+            </table>
+        </div>
     </div>
-  </nav>
-  <main>
-    <div class="columns">
-      <div class="column" id="main-left">
-        LEFT
-      </div>
-      <div class="column" id="main-center">
-        CENTER
-      </div>
-      <div class="column" id="main-right">
-        RIGHT
-      </div>
-  </main>
-  <footer>
-    <h3>
-      <a class="github-button" href="https://github.com/cyberpanda" data-size="large" aria-label="Follow @cyberpanda on GitHub">GitHub</a>
-    </h3>
-    <div id=left>
-      © 2021 Cyber Panda</div> <a id="twitterbtn" href="//twitter.com/c0dehard"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter" viewBox="0 0 16 16">
-        <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"></path>
-      </svg> Follow me</a>
+    <script>
+         function openCVETab(cveID) {
+        const url = `https://cve.mitre.org/cgi-bin/cvename.cgi?name=${cveID}`;
+        window.open(url, '_blank');
+    }
 
-    </div>
-  </footer>
+        let cveData = [];
+
+        function fetchCVEData() {
+            fetch('https://services.nvd.nist.gov/rest/json/cves/1.0?resultsPerPage=500', {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                cveData = data.result.CVE_Items;
+                renderCVEs(cveData);
+            })
+            .catch(error => console.error(error));
+        }
+
+        function renderCVEs(data) {
+            const cveTable = document.getElementById('cveTable');
+            cveTable.innerHTML = '';
+
+            data.forEach(cveItem => {
+                const cve = cveItem.cve;
+                const cveID = cve.CVE_data_meta.ID;
+                const descriptionData = cve.description.description_data[0];
+                const description = descriptionData ? descriptionData.value : "N/A";
+                const severityScore = getSeverityScore(cveItem);
+                const severity = getSeverityText(severityScore);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><a href="#" onclick="openCVETab('${cveID}');">${cveID}</a></td>
+                    <td class="severity-${severity.toLowerCase()}">${severity}</td>
+                    <td>${description}</td>
+                `;
+
+                cveTable.appendChild(row);
+            });
+        }
+
+        function getSeverityScore(cveItem) {
+            if (cveItem.impact && cveItem.impact.baseMetricV3 && cveItem.impact.baseMetricV3.cvssV3) {
+                return cveItem.impact.baseMetricV3.cvssV3.baseScore;
+            } else {
+                console.log("No valid 'baseScore' found for CVE: " + cveItem.cve.CVE_data_meta.ID);
+                return "N/A";
+            }
+        }
+
+        function getSeverityText(score) {
+            if (score === "N/A") {
+                return "N/A";
+            } else if (score >= 9.0) {
+                return "Critical";
+            } else if (score >= 7.0) {
+                return "High";
+            } else if (score >= 4.0) {
+                return "Medium";
+            } else {
+                return "Low";
+            }
+        }
+
+        function refreshData() {
+            fetchCVEData();
+            const refreshInterval = document.getElementById('refreshInterval').value;
+            setTimeout(refreshData, refreshInterval);
+        }
+
+        function setRefreshInterval() {
+            const refreshInterval = document.getElementById('refreshInterval').value;
+            setTimeout(refreshData, refreshInterval);
+        }
+
+        function sortTable(column) {
+    cveData.sort((a, b) => {
+        if (column === 1) {
+            const dateA = new Date(a.publishedDate);
+            const dateB = new Date(b.publishedDate);
+            return dateB - dateA;
+        } else if (column === 0) {
+            const valueA = a.cve.CVE_data_meta.ID;
+            const valueB = b.cve.CVE_data_meta.ID;
+            return valueB.localeCompare(valueA);
+        }
+    });
+    renderCVEs(cveData);
+}
+
+
+        function searchCVEs() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredCVEs = cveData.filter(cveItem => {
+                const cve = cveItem.cve;
+                const cveID = cve.CVE_data_meta.ID.toLowerCase();
+                const descriptionData = cve.description.description_data[0];
+                const description = descriptionData ? descriptionData.value.toLowerCase() : "";
+                return cveID.includes(searchTerm) || description.includes(searchTerm);
+            });
+            renderCVEs(filteredCVEs);
+        }
+
+        fetchCVEData(); 
+    </script>
 </body>
-
 </html>
