@@ -17,7 +17,10 @@ CVE-Table is your go-to resource for quickly finding information about Common Vu
 
 - Fix CSS Issue#2, add Semi-Darkmode, redesign a bit.
 
-
+### Regular Mode
+![regular](regular_theme.jpg)
+### Dark Mode
+![dark](dark_theme.jpg)
 ### Old Preview:
 ![search_strings.png](search_strings.png)
 ![search_string_2.png](search_string_2.png)
