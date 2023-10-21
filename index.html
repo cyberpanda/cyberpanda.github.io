@@ -1,159 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVE Table</title>
-    <style>
-        body {
-            background: linear-gradient(135deg, rgba(107, 11, 234, 0.8), rgba(18, 33, 36, 0.8));
-            color: #fff;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>CVE-Table</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                transition: background-color 0.3s, color 0.3s;
+            }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
+            .light-mode {
+                background: linear-gradient(135deg, rgba(48, 9, 99, 0.8), rgba(18, 33, 36, 0.8));
+                color: #fff;
+            }
 
-        .container-box {
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-            max-width: 800px;
-            width: 90%;
-            margin-top: 20px; 
-        }
+            .dark-mode {
+                background: #1e1e1e;
+                color: #fff;
+            }
 
-        .navbar {
-            background-color: transparent;
-            padding: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+            .container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+            }
 
-        .search-bar {
-            flex: 1;
-            display: flex;
-            align-items: center;
-        }
+            .container-box {
+                background: rgba(0, 0, 0, 0.5);
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+                max-width: 800px;
+                width: 90%;
+                margin-top: 20px;
+            }
 
-        .search-bar input {
-            width: 33%;
-            padding: 8px;
-            font-size: 14px;
-            border: none;
-            background: rgba(12, 15, 24, 0.5);
-            color: #fff;
-        }
+            .dark-mode-toggle-button {
+                background-color: #000;
+                color: #fff;
+                border: none;
+                padding: 10px 16px;
+                font-size: 16px;
+                cursor: pointer;
+                border-radius: 5px;
+                margin-right: 5px;
+                transition: background-color 0.2s;
+            }
 
-        select#refreshInterval {
-            border: none;
-            background-color: rgba(12, 15, 24, 0.5);
-            color: #fff;
-            font-size: 14px;
-            cursor: pointer;
-        }
+            .dark-mode-toggle-button:hover {
+                background-color: #1e1e1e;
+            }
 
-        .refresh-button button {
-            background-color: #0074e4;
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.2s;
-        }
+            .dark-mode-toggle-button[data-mode="dark"] {
+                background-color: #000;
+            }
 
-        .refresh-button button:hover {
-            background-color: #005bc0;
-        }
+            .dark-mode-toggle-button[data-mode="light"] {
+                background-color: #fff;
+                color: #000;
+            }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: rgba(12, 15, 24, 0.5);
-            color: #fff;
-        }
+            table {
+                table-layout: auto;
+                width: 100%;
+                border-collapse: collapse;
+                background-color: rgba(12, 15, 24, 0.5);
+                color: #fff;
+            }
 
-        th, td {
-            border: 1px solid #1e273d;
-            padding: 12px;
-            text-align: left;
-        }
+            th,
+            td {
+                border: 1px solid #1e273d;
+                padding: 12px;
+                text-align: left;
+                white-space: normal;
+                color: #fff;
+            }
 
-        th {
-            background-color: #000;
-            color: #fff;
-            cursor: pointer;
-        }
+            th {
+                background-color: #000;
+                color: #fff;
+                cursor: pointer;
+            }
 
-        th i {
-            margin-left: 5px;
-        }
+            th i {
+                margin-left: 5px;
+            }
 
-        tr:nth-child(even) {
-            background-color: rgba(30, 39, 61, 0.5);
-        }
+            tr:nth-child(even) {
+                background-color: rgba(30, 39, 61, 0.5);
+            }
 
-        tr:hover {
-            background-color: rgba(0, 0, 0, 0.5);
-        }
+            tr:hover {
+                background-color: rgba(0, 0, 0, 0.5);
+            }
 
-        .severity-critical { background-color: #ff1744; }
-        .severity-high { background-color: #fdd835; }
-        .severity-medium { background-color: #00e676; }
-        .severity-low { background-color: #ffffff; color: #000; }
-        .severity-score {
-            font-weight: bold;
-        }
+            .severity-critical {
+                background: linear-gradient(135deg, rgba(255, 23, 68, 0.15), rgba(255, 23, 68, 0.3));
+                color: #f28299;
+                text-align: center;
+            }
 
-        .search-bar input::placeholder {
-            color: #aaa;
-        }
+            .severity-high {
+                background: linear-gradient(135deg, rgba(253, 216, 53, 0.15), rgba(253, 216, 53, 0.3));
+                color: #fdd835;
+                text-align: center;
+            }
 
-        td a {
-            color: #6bb5cc;
-            transition: color 0.3s; 
-        }
+            .severity-medium {
+                background: linear-gradient(135deg, rgba(0, 230, 118, 0.15), rgba(0, 230, 118, 0.3));
+                color: #00e676;
+                text-align: center;
+            }
 
-        td a:hover{
-            color:rgb(99, 71, 150);
-        }
+            .severity-low {
+                background: linear-gradient(135deg, rgba(51, 102, 255, 0.15), rgba(51, 102, 255, 0.3));
+                color: #3366ff;
+                text-align: center;
+            }
 
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="container-box">
-                        <div class="navbar">
-                <div class="logo">
-                    <!-- Placeholder for Logo -->
-                </div>
+            .severity-score {
+                font-weight: bold;
+            }
+
+            .search-bar input::placeholder {
+                color: #aaa;
+            }
+
+            td a {
+                color: #6bb5cc;
+                transition: color 0.3s;
+            }
+
+            td a:hover {
+                color: rgb(99, 71, 150);
+            }
+
+            .navbar {
+                background-color: transparent;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%; /* Expands the navbar to the table's width */
+            }
+
+            .logo {
+                font-size: 18px;
+                display: flex;
+                align-items: center;
+                margin-right: 10px;
+            }
+
+            .search-bar {
+                flex: 1/3; /* hotfix for search bar width*/
+                display: flex;
+                align-items: center;
+                border-radius: 15px;
+                padding-left: 5px;
+                margin-right: 10px; 
+            }
+
+            .search-bar input {
+                padding: 10px;
+                font-size: 16px;
+                border: none;
+                background: rgba(12, 15, 24, 0.5);
+                color: #fff;
+                width: 100%;
+            }
+
+            .dropdown {
+                margin-right: 10px; 
+            }
+
+            .controls label {
+                color: #fff;
+                margin-right: 10px;
+            }
+
+            .refresh-button button {
+                background-color: #0074e4;
+                color: #fff;
+                border: none;
+                padding: 8px 16px;
+                font-size: 14px;
+                cursor: pointer;
+                border-radius: 5px;
+                transition: background-color 0.2s;
+            }
+            .refresh-button button:hover {
+                background-color: #005bc0;
+            }
+
+            .logo a:link {
+                color: rgba(127, 255, 127, 0.908);
+                text-decoration: none;
+            }
+            .logo a:hover {
+                color: rgb(255, 255, 255);
+            }
+            .logo a:visited {
+                color: rgba(127, 255, 127, 0.908);
+            }
+            .logo a:active {
+                color: rgb(9, 9, 9);
+            }
+        </style>
+    </head>
+    <body class="light-mode">
+        <div class="container">
+            <div class="navbar">
                 <div class="search-bar">
-                    <input type="text" id="searchInput" placeholder="Search CVEs" onkeyup="searchCVEs()">
-                    <p style="font-size: 12px; margin: 10px 0; padding-left: 20px;">Made with ❤️ by CyberPanda</p>
-                    </a>
-                    
+                    <input type="text" id="searchInput" placeholder="Search CVEs" onkeyup="searchCVEs()" />
                 </div>
-                
-                <div class="refresh-button">
-                    <label for="refreshInterval" style="color: #fff;">Refresh every:</label>
-                    <select id="refreshInterval" onchange="setRefreshInterval()">
-                        <option value="300000">5 mins</option>
-                        <option value="600000">10 mins</option>
-                        <option value="1800000">30 mins</option>
-                        <option value="3600000">1 hour</option>
-                    </select>
-                    <button onclick="refreshData()">Refresh Now</button>
+                <div class="logo">
+                    <h4>CVE-Table</h4>
+                    &nbsp;<small>powered by <a href="http://github.com/cyberpanda">CyberPanda 🐼</a></small>
+                </div>
+
+                <div class="controls">
+                    <div class="refresh-button">
+                        <!-- <button onclick="refreshData()">Refresh/5m</button> TODO: Need to fix, see github Issue #2-->
+                    </div>
+                    <button id="darkModeToggle" class="dark-mode-toggle-button" onclick="toggleDarkMode()">Switch Theme</button>
                 </div>
             </div>
             <table>
@@ -169,113 +243,134 @@
                 </tbody>
             </table>
         </div>
-    </div>
-    <script>
-         function openCVETab(cveID) {
-        const url = `https://cve.mitre.org/cgi-bin/cvename.cgi?name=${cveID}`;
-        window.open(url, '_blank');
-    }
+        <script>
+            let isDarkMode = false;
+            const darkModeToggle = document.getElementById("darkModeToggle");
+            const body = document.body;
 
-        let cveData = [];
+            function toggleDarkMode() {
+                if (body.classList.contains("light-mode")) {
+                    body.classList.remove("light-mode");
+                    body.classList.add("dark-mode");
+                    darkModeToggle.innerHTML = "☀️ Light Mode"; // Changed the emoji
+                } else {
+                    body.classList.remove("dark-mode");
+                    body.classList.add("light-mode");
+                    darkModeToggle.innerHTML = "🌙 Dark Mode"; // Changed the emoji
+                }
 
-        function fetchCVEData() {
-            fetch('https://services.nvd.nist.gov/rest/json/cves/1.0?resultsPerPage=500', {
-                method: 'GET',
-            })
-            .then(response => response.json())
-            .then(data => {
-                cveData = data.result.CVE_Items;
-                renderCVEs(cveData);
-            })
-            .catch(error => console.error(error));
-        }
+                isDarkMode = !isDarkMode;
+            }
 
-        function renderCVEs(data) {
-            const cveTable = document.getElementById('cveTable');
-            cveTable.innerHTML = '';
+            function openCVETab(cveID) {
+                const url = `https://cve.mitre.org/cgi-bin/cvename.cgi?name=${cveID}`;
+                window.open(url, "_blank");
+            }
 
-            data.forEach(cveItem => {
-                const cve = cveItem.cve;
-                const cveID = cve.CVE_data_meta.ID;
-                const descriptionData = cve.description.description_data[0];
-                const description = descriptionData ? descriptionData.value : "N/A";
-                const severityScore = getSeverityScore(cveItem);
-                const severity = getSeverityText(severityScore);
+            let cveData = [];
 
-                const row = document.createElement('tr');
-                row.innerHTML = `
+            function fetchCVEData() {
+                fetch("https://services.nvd.nist.gov/rest/json/cves/1.0?resultsPerPage=500", {
+                    method: "GET",
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        cveData = data.result.CVE_Items;
+                        renderCVEs(cveData);
+                    })
+                    .catch((error) => console.error(error));
+            }
+
+            function renderCVEs(data) {
+                const cveTable = document.getElementById("cveTable");
+                cveTable.innerHTML = "";
+
+                data.forEach((cveItem) => {
+                    const cve = cveItem.cve;
+                    const cveID = cve.CVE_data_meta.ID;
+                    const descriptionData = cve.description.description_data[0];
+                    const description = descriptionData ? descriptionData.value : "N/A";
+                    const severityScore = getSeverityScore(cveItem);
+                    const severity = getSeverityText(severityScore);
+
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
                     <td><a href="#" onclick="openCVETab('${cveID}');">${cveID}</a></td>
                     <td class="severity-${severity.toLowerCase()}">${severity}</td>
                     <td>${description}</td>
                 `;
 
-                cveTable.appendChild(row);
-            });
-        }
-
-        function getSeverityScore(cveItem) {
-            if (cveItem.impact && cveItem.impact.baseMetricV3 && cveItem.impact.baseMetricV3.cvssV3) {
-                return cveItem.impact.baseMetricV3.cvssV3.baseScore;
-            } else {
-                console.log("No valid 'baseScore' found for CVE: " + cveItem.cve.CVE_data_meta.ID);
-                return "N/A";
+                    cveTable.appendChild(row);
+                });
             }
-        }
 
-        function getSeverityText(score) {
-            if (score === "N/A") {
-                return "N/A";
-            } else if (score >= 9.0) {
-                return "Critical";
-            } else if (score >= 7.0) {
-                return "High";
-            } else if (score >= 4.0) {
-                return "Medium";
-            } else {
-                return "Low";
+            function getSeverityScore(cveItem) {
+                if (cveItem.impact && cveItem.impact.baseMetricV3 && cveItem.impact.baseMetricV3.cvssV3) {
+                    return cveItem.impact.baseMetricV3.cvssV3.baseScore;
+                } else {
+                    console.log("No valid 'baseScore' found for CVE: " + cveItem.cve.CVE_data_meta.ID);
+                    return "N/A";
+                }
             }
-        }
 
-        function refreshData() {
+            function getSeverityText(score) {
+                if (score === "N/A") {
+                    return "N/A";
+                } else if (score >= 9.0) {
+                    return "Critical";
+                } else if (score >= 7.0) {
+                    return "High";
+                } else if (score >= 4.0) {
+                    return "Medium";
+                } else {
+                    return "Low";
+                }
+            }
+
+            /*const refreshInterval = 300000;
+            function refreshData() {
+                fetchCVEData();
+                setTimeout(refreshData, refreshInterval);
+            }*/
+
+            function sortTable(column) {
+                cveData.sort((a, b) => {
+                    if (column === 1) {
+                        const dateA = new Date(a.publishedDate);
+                        const dateB = new Date(b.publishedDate);
+                        return dateB - dateA;
+                    } else if (column === 0) {
+                        const valueA = a.cve.CVE_data_meta.ID;
+                        const valueB = b.cve.CVE_data_meta.ID;
+                        return valueB.localeCompare(valueA);
+                    }
+                });
+                renderCVEs(cveData);
+            }
+
+            function searchCVEs() {
+                const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+                const filteredCVEs = cveData.filter((cveItem) => {
+                    const cve = cveItem.cve;
+                    const cveID = cve.CVE_data_meta.ID.toLowerCase();
+                    const descriptionData = cve.description.description_data[0];
+                    const description = descriptionData ? descriptionData.value.toLowerCase() : "";
+                    return cveID.includes(searchTerm) || description.includes(searchTerm);
+                });
+                renderCVEs(filteredCVEs);
+            }
+            function toggleDarkMode() {
+                const body = document.body;
+                if (body.classList.contains("light-mode")) {
+                    body.classList.remove("light-mode");
+                    body.classList.add("dark-mode");
+                } else {
+                    body.classList.remove("dark-mode");
+                    body.classList.add("light-mode");
+                }
+            }
+
             fetchCVEData();
-            const refreshInterval = document.getElementById('refreshInterval').value;
-            setTimeout(refreshData, refreshInterval);
-        }
-
-        function setRefreshInterval() {
-            const refreshInterval = document.getElementById('refreshInterval').value;
-            setTimeout(refreshData, refreshInterval);
-        }
-
-        function sortTable(column) {
-    cveData.sort((a, b) => {
-        if (column === 1) {
-            const dateA = new Date(a.publishedDate);
-            const dateB = new Date(b.publishedDate);
-            return dateB - dateA;
-        } else if (column === 0) {
-            const valueA = a.cve.CVE_data_meta.ID;
-            const valueB = b.cve.CVE_data_meta.ID;
-            return valueB.localeCompare(valueA);
-        }
-    });
-    renderCVEs(cveData);
-}
-
-
-        function searchCVEs() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const filteredCVEs = cveData.filter(cveItem => {
-                const cve = cveItem.cve;
-                const cveID = cve.CVE_data_meta.ID.toLowerCase();
-                const descriptionData = cve.description.description_data[0];
-                const description = descriptionData ? descriptionData.value.toLowerCase() : "";
-                return cveID.includes(searchTerm) || description.includes(searchTerm);
-            });
-            renderCVEs(filteredCVEs);
-        }
-
-        fetchCVEData(); 
-    </script>
-</body>
+        </script>
+    </body>
 </html>
