@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>CVE-Table</title>
-        <style>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CVE-Table</title>
+    <style>
             body {
                 font-family: Arial, sans-serif;
                 margin: 0;
@@ -23,12 +23,12 @@
             }
 
             .container {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                min-height: 100vh;
-            }
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+        }
 
             .container-box {
                 background: rgba(0, 0, 0, 0.5);
@@ -142,12 +142,13 @@
             }
 
             .navbar {
-                background-color: transparent;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                width: 100%; /* Expands the navbar to the table's width */
-            }
+            background-color: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding-top: 10px; /* Add some top padding */
+        }
 
             .logo {
                 font-size: 18px;
