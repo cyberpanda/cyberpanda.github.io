@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CVE-Table</title>
-    <style>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>CVE-Table</title>
+        <style>
             body {
                 font-family: Arial, sans-serif;
                 margin: 0;
@@ -23,12 +23,12 @@
             }
 
             .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
-        }
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                min-height: 100vh;
+            }
 
             .container-box {
                 background: rgba(0, 0, 0, 0.5);
@@ -142,13 +142,13 @@
             }
 
             .navbar {
-            background-color: transparent;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            padding-top: 10px; /* Add some top padding */
-        }
+                background-color: transparent;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                padding-top: 10px;
+            }
 
             .logo {
                 font-size: 18px;
@@ -163,7 +163,7 @@
                 align-items: center;
                 border-radius: 15px;
                 padding-left: 5px;
-                margin-right: 10px; 
+                margin-right: 10px;
             }
 
             .search-bar input {
@@ -176,7 +176,7 @@
             }
 
             .dropdown {
-                margin-right: 10px; 
+                margin-right: 10px;
             }
 
             .controls label {
@@ -211,9 +211,71 @@
             .logo a:active {
                 color: rgb(9, 9, 9);
             }
+            .theme-palette-button {
+                border: none;
+                cursor: pointer;
+                padding: 5px 10px;
+                border-radius: 5px;
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+            .theme-palette {
+                display: none;
+                position: absolute;
+                background: rgb(9, 9, 9);
+                padding: 10px;
+                margin-top: 40px;
+                border-radius: 5px;
+            }
+
+            .theme-button {
+                display: block;
+                flex-grow: 1;
+                border: none;
+                cursor: pointer;
+                margin: 0 5px;
+                height: 20px;
+                padding: 5px 10px;
+                border-radius: 5px;
+            }
+            .theme-button:hover {
+                box-shadow: 1px 1px 5px rgba(251, 251, 251, 0.3);
+                height: 25px;
+            }
+
+            .light-theme {
+                background: linear-gradient(135deg, rgba(48, 9, 99, 0.8), rgba(18, 33, 36, 0.8));
+                color: #fff;
+            }
+
+            .dark-theme {
+                background: #1e1e1e;
+                color: #fff;
+            }
+
+            .pink-theme {
+                background: linear-gradient(135deg, rgba(255, 105, 180, 0.8), rgba(255, 20, 147, 0.8));
+                color: #fff;
+            }
+
+            .rose-theme {
+                background: linear-gradient(135deg, rgba(255, 36, 123, 0.8), rgba(255, 0, 127, 0.8));
+                color: #fff;
+            }
+
+            .lemon-theme {
+                background: linear-gradient(135deg, rgba(255, 241, 5, 0.8), rgba(255, 217, 0, 0.8));
+                color: #333;
+            }
+
+            .mint-theme {
+                background: linear-gradient(135deg, rgba(0, 255, 157, 0.8), rgba(0, 255, 191, 0.8));
+                color: #333;
+            }
         </style>
     </head>
-    <body class="light-mode">
+    <body class="light-theme">
         <div class="container">
             <div class="navbar">
                 <div class="search-bar">
@@ -228,7 +290,17 @@
                     <div class="refresh-button">
                         <!-- <button onclick="refreshData()">Refresh/5m</button> TODO: Need to fix, see github Issue #2-->
                     </div>
-                    <button id="darkModeToggle" class="dark-mode-toggle-button" onclick="toggleDarkMode()">Switch Theme</button>
+                    <div class="theme-palette-button" onclick="togglePalette()">
+                        Color Palette ▼
+                        <div class="theme-palette" id="themePalette">
+                            <button class="theme-button light-theme" onclick="setTheme('light')"></button>
+                            <button class="theme-button dark-theme" onclick="setTheme('dark')"></button>
+                            <button class="theme-button pink-theme" onclick="setTheme('pink')"></button>
+                            <button class="theme-button rose-theme" onclick="setTheme('rose')"></button>
+                            <button class="theme-button lemon-theme" onclick="setTheme('lemon')"></button>
+                            <button class="theme-button mint-theme" onclick="setTheme('mint')"></button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <table>
@@ -245,23 +317,23 @@
             </table>
         </div>
         <script>
-            let isDarkMode = false;
-            const darkModeToggle = document.getElementById("darkModeToggle");
             const body = document.body;
+            let paletteVisible = false;
 
-            function toggleDarkMode() {
-                if (body.classList.contains("light-mode")) {
-                    body.classList.remove("light-mode");
-                    body.classList.add("dark-mode");
-                    darkModeToggle.innerHTML = "☀️ Light Mode"; // Changed the emoji
+            function togglePalette() {
+                const themePalette = document.getElementById("themePalette");
+                if (paletteVisible) {
+                    themePalette.style.display = "none";
                 } else {
-                    body.classList.remove("dark-mode");
-                    body.classList.add("light-mode");
-                    darkModeToggle.innerHTML = "🌙 Dark Mode"; // Changed the emoji
+                    themePalette.style.display = "block";
                 }
-
-                isDarkMode = !isDarkMode;
+                paletteVisible = !paletteVisible;
             }
+
+            function setTheme(theme) {
+                document.body.className = theme + "-theme";
+            }
+            setTheme("light");
 
             function openCVETab(cveID) {
                 const url = `https://cve.mitre.org/cgi-bin/cvename.cgi?name=${cveID}`;
