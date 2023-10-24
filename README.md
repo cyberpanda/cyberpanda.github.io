@@ -14,7 +14,8 @@ CVE-Table is your go-to resource for quickly finding information about Common Vu
 - **Hyperlinked References:** Access a curated list of references related to the CVE, making it easy to further explore and understand the security issue.
 
 ## Changelog:
-
+- Add Color Palette
+![](color-pallet.jpg)
 - Fix CSS Issue#2, add Semi-Darkmode, redesign a bit.
 
 ### Regular Mode
