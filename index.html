@@ -328,8 +328,7 @@
         <div class="container">
             <div class="navbar">
                 <div class="search-bar">
-                    <input type="text" id="searchInput" placeholder="Search CVEs" onkeyup="searchCVEs()" />
-                    <button class="severity-filter-button critical" onclick="toggleSeverity('critical')">Critical</button>
+                    <input type="text" id="searchInput" placeholder="Search CVEs" onkeyup="searchCVEs()" /> <button class="severity-filter-button critical" onclick="toggleSeverity('critical')">Critical</button>
                     <button class="severity-filter-button high" onclick="toggleSeverity('high')">High</button>
                     <button class="severity-filter-button medium" onclick="toggleSeverity('medium')">Medium</button>
                     <button class="severity-filter-button low" onclick="toggleSeverity('low')">Low</button>
@@ -473,6 +472,19 @@
                 }
             }
 
+            function searchCVEs() {
+                const input = document.getElementById("searchInput");
+                const searchTerm = input.value.toLowerCase();
+                const filteredCVEs = cveData.filter((cveItem) => {
+                    const cveID = cveItem.cve.CVE_data_meta.ID.toLowerCase();
+                    const descriptionData = cveItem.cve.description.description_data[0];
+                    const description = descriptionData ? descriptionData.value.toLowerCase() : "";
+
+                    return cveID.includes(searchTerm) || description.includes(searchTerm);
+                });
+
+                renderCVEs(filteredCVEs);
+            }
             fetchCVEData();
         </script>
     </body>
