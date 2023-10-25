@@ -13,6 +13,7 @@
             }
 
             .light-mode {
+                /*purple default mode, IKR.. TODO need to fix naming later!*/
                 background: linear-gradient(135deg, rgba(48, 9, 99, 0.8), rgba(18, 33, 36, 0.8));
                 color: #fff;
             }
@@ -50,19 +51,6 @@
                 border-radius: 5px;
                 margin-right: 5px;
                 transition: background-color 0.2s;
-            }
-
-            .dark-mode-toggle-button:hover {
-                background-color: #1e1e1e;
-            }
-
-            .dark-mode-toggle-button[data-mode="dark"] {
-                background-color: #000;
-            }
-
-            .dark-mode-toggle-button[data-mode="light"] {
-                background-color: #fff;
-                color: #000;
             }
 
             table {
@@ -158,7 +146,7 @@
             }
 
             .search-bar {
-                flex: 1/3; /* hotfix for search bar width*/
+                flex: 1/3;
                 display: flex;
                 align-items: center;
                 border-radius: 15px;
@@ -173,6 +161,7 @@
                 background: rgba(12, 15, 24, 0.5);
                 color: #fff;
                 width: 100%;
+                margin-right: 10px;
             }
 
             .dropdown {
@@ -194,6 +183,7 @@
                 border-radius: 5px;
                 transition: background-color 0.2s;
             }
+
             .refresh-button button:hover {
                 background-color: #005bc0;
             }
@@ -202,15 +192,19 @@
                 color: rgba(127, 255, 127, 0.908);
                 text-decoration: none;
             }
+
             .logo a:hover {
                 color: rgb(255, 255, 255);
             }
+
             .logo a:visited {
                 color: rgba(127, 255, 127, 0.908);
             }
+
             .logo a:active {
                 color: rgb(9, 9, 9);
             }
+
             .theme-palette-button {
                 border: none;
                 cursor: pointer;
@@ -273,6 +267,61 @@
                 background: linear-gradient(135deg, rgba(0, 255, 157, 0.8), rgba(0, 255, 191, 0.8));
                 color: #333;
             }
+
+            .severity-filter-button {
+                border: none;
+                padding: 8px 16px;
+                font-size: 14px;
+                cursor: pointer;
+                border-radius: 5px;
+                margin-right: 10px;
+                transition: background-color 0.2s, box-shadow 0.2s, color 0.2s;
+            }
+
+            .severity-filter-button.critical,
+            .severity-filter-button.high,
+            .severity-filter-button.medium,
+            .severity-filter-button.low,
+            .severity-filter-button.na {
+                color: #fff;
+                background: rgba(0, 0, 0, 0.5);
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            }
+
+            .severity-filter-button:hover {
+                background: rgba(0, 0, 0, 0.7);
+            }
+
+            .severity-filter-button.active {
+                background: linear-gradient(135deg, rgba(75, 202, 129, 0.3), rgba(32, 102, 45, 0.7));
+                color: #ffffff;
+                box-shadow: 0px 0px 10px rgba(75, 202, 129, 0.8);
+            }
+
+            .severity-filter-button.active.critical {
+                background: linear-gradient(135deg, rgba(255, 23, 68, 0.15), rgba(255, 23, 68, 0.3));
+                box-shadow: none;
+            }
+
+            .severity-filter-button.active.high {
+                background: linear-gradient(135deg, rgba(253, 216, 53, 0.15), rgba(253, 216, 53, 0.3));
+                box-shadow: none;
+            }
+
+            .severity-filter-button.active.medium {
+                background: linear-gradient(135deg, rgba(0, 230, 118, 0.15), rgba(0, 230, 118, 0.3));
+                box-shadow: none;
+            }
+
+            .severity-filter-button.active.low {
+                background: linear-gradient(135deg, rgba(51, 102, 255, 0.15), rgba(51, 102, 255, 0.3));
+                box-shadow: none;
+            }
+
+            .severity-filter-button.active.na {
+                background: rgba(12, 15, 24, 0.5);
+                box-shadow: none;
+            }
         </style>
     </head>
     <body class="light-theme">
@@ -280,16 +329,15 @@
             <div class="navbar">
                 <div class="search-bar">
                     <input type="text" id="searchInput" placeholder="Search CVEs" onkeyup="searchCVEs()" />
+                    <button class="severity-filter-button critical" onclick="toggleSeverity('critical')">Critical</button>
+                    <button class="severity-filter-button high" onclick="toggleSeverity('high')">High</button>
+                    <button class="severity-filter-button medium" onclick="toggleSeverity('medium')">Medium</button>
+                    <button class="severity-filter-button low" onclick="toggleSeverity('low')">Low</button>
+                    <button class="severity-filter-button na" onclick="toggleSeverity('na')">N/A</button>
                 </div>
                 <div class="logo">
                     <h4>CVE-Table</h4>
                     &nbsp;<small>powered by <a href="http://github.com/cyberpanda">CyberPanda 🐼</a></small>
-                </div>
-
-                <div class="controls">
-                    <div class="refresh-button">
-                        <!-- <button onclick="refreshData()">Refresh/5m</button> TODO: Need to fix, see github Issue #2-->
-                    </div>
                     <div class="theme-palette-button" onclick="togglePalette()">
                         Color Palette ▼
                         <div class="theme-palette" id="themePalette">
@@ -358,6 +406,12 @@
                 const cveTable = document.getElementById("cveTable");
                 cveTable.innerHTML = "";
 
+                data.sort((a, b) => {
+                    const valueA = a.cve.CVE_data_meta.ID;
+                    const valueB = b.cve.CVE_data_meta.ID;
+                    return valueB.localeCompare(valueA);
+                });
+
                 data.forEach((cveItem) => {
                     const cve = cveItem.cve;
                     const cveID = cve.CVE_data_meta.ID;
@@ -400,46 +454,22 @@
                 }
             }
 
-            /*const refreshInterval = 300000;
-            function refreshData() {
-                fetchCVEData();
-                setTimeout(refreshData, refreshInterval);
-            }*/
+            function toggleSeverity(severity) {
+                const button = document.querySelector(`.severity-filter-button.${severity}`);
+                button.classList.toggle("active");
 
-            function sortTable(column) {
-                cveData.sort((a, b) => {
-                    if (column === 1) {
-                        const dateA = new Date(a.publishedDate);
-                        const dateB = new Date(b.publishedDate);
-                        return dateB - dateA;
-                    } else if (column === 0) {
-                        const valueA = a.cve.CVE_data_meta.ID;
-                        const valueB = b.cve.CVE_data_meta.ID;
-                        return valueB.localeCompare(valueA);
-                    }
-                });
-                renderCVEs(cveData);
-            }
-
-            function searchCVEs() {
-                const searchTerm = document.getElementById("searchInput").value.toLowerCase();
-                const filteredCVEs = cveData.filter((cveItem) => {
-                    const cve = cveItem.cve;
-                    const cveID = cve.CVE_data_meta.ID.toLowerCase();
-                    const descriptionData = cve.description.description_data[0];
-                    const description = descriptionData ? descriptionData.value.toLowerCase() : "";
-                    return cveID.includes(searchTerm) || description.includes(searchTerm);
-                });
-                renderCVEs(filteredCVEs);
-            }
-            function toggleDarkMode() {
-                const body = document.body;
-                if (body.classList.contains("light-mode")) {
-                    body.classList.remove("light-mode");
-                    body.classList.add("dark-mode");
+                const activeButtons = document.querySelectorAll(".severity-filter-button.active");
+                if (activeButtons.length === 0) {
+                    // No active filters, show all CVEs
+                    renderCVEs(cveData);
                 } else {
-                    body.classList.remove("dark-mode");
-                    body.classList.add("light-mode");
+                    // Filter CVEs based on active buttons
+                    const activeSeverities = Array.from(activeButtons).map((btn) => btn.classList[1]);
+                    const filteredCVEs = cveData.filter((cveItem) => {
+                        const severity = getSeverityText(getSeverityScore(cveItem)).toLowerCase();
+                        return activeSeverities.includes(severity);
+                    });
+                    renderCVEs(filteredCVEs);
                 }
             }
 
