@@ -411,6 +411,10 @@
                     return valueB.localeCompare(valueA);
                 });
 
+                function escapeHtml(unsafe) {
+                    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+                }
+
                 data.forEach((cveItem) => {
                     const cve = cveItem.cve;
                     const cveID = cve.CVE_data_meta.ID;
@@ -423,7 +427,7 @@
                     row.innerHTML = `
                     <td><a href="#" onclick="openCVETab('${cveID}');">${cveID}</a></td>
                     <td class="severity-${severity.toLowerCase()}">${severity}</td>
-                    <td>${description}</td>
+                    <td>${escapeHtml(description)}</td>
                 `;
 
                     cveTable.appendChild(row);
