@@ -6,6 +6,7 @@
         <title>CVE-Table</title>
         <style>
             body {
+                border-radius: 15px;
                 font-family: Arial, sans-serif;
                 margin: 0;
                 padding: 0;
@@ -207,6 +208,7 @@
 
             .theme-palette-button {
                 border: none;
+                list-style: none;
                 cursor: pointer;
                 padding: 5px 10px;
                 border-radius: 5px;
@@ -224,7 +226,7 @@
             }
 
             .theme-button {
-                display: block;
+                display: inline-block;
                 flex-grow: 1;
                 border: none;
                 cursor: pointer;
@@ -232,10 +234,12 @@
                 height: 20px;
                 padding: 5px 10px;
                 border-radius: 5px;
+                box-shadow: 0 0 0 2px rgba(255, 255, 255, 0);
+                transition: box-shadow 0.3s;
             }
+
             .theme-button:hover {
-                box-shadow: 1px 1px 5px rgba(251, 251, 251, 0.3);
-                height: 25px;
+                box-shadow: 0 0 0 2px rgba(255, 255, 255, 1);
             }
 
             .light-theme {
@@ -336,9 +340,9 @@
                 </div>
                 <div class="logo">
                     <h4>CVE-Table</h4>
-                    &nbsp;<small>powered by <a href="http://github.com/cyberpanda">CyberPanda 🐼</a></small>
+                    &nbsp;<small>a <a href="http://github.com/cyberpanda">Open Source Project</a></small>
                     <div class="theme-palette-button" onclick="togglePalette()">
-                        Color Palette ▼
+                        Theme ▼
                         <div class="theme-palette" id="themePalette">
                             <button class="theme-button light-theme" onclick="setTheme('light')"></button>
                             <button class="theme-button dark-theme" onclick="setTheme('dark')"></button>
@@ -380,7 +384,7 @@
             function setTheme(theme) {
                 document.body.className = theme + "-theme";
             }
-            setTheme("light");
+            setTheme("dark");
 
             function openCVETab(cveID) {
                 const url = `https://cve.mitre.org/cgi-bin/cvename.cgi?name=${cveID}`;
