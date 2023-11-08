@@ -407,6 +407,31 @@
                 background: rgba(12, 15, 24, 0.5);
                 box-shadow: none;
             }
+
+            #clearCacheButton {
+                color: white;
+                background-color: black;
+                border: none;
+                padding: 8px 16px;
+                font-size: 14px;
+                cursor: pointer;
+                border-radius: 5px;
+                margin-right: 10px;
+                margin-left: 10px;
+                transition: background-color 0.2s, box-shadow 0.2s, color 0.2s;
+            }
+            #clearCacheButton:hover {
+                color: rgb(245, 236, 236);
+                background-color: rgb(60, 1, 1);
+                border: none;
+                padding: 8px 16px;
+                font-size: 14px;
+                cursor: pointer;
+                border-radius: 5px;
+                margin-right: 10px;
+                margin-left: 10px;
+                transition: background-color 0.2s, box-shadow 0.2s, color 0.2s;
+            }
         </style>
     </head>
     <body class="light-theme">
@@ -422,6 +447,7 @@
                 <div class="logo">
                     <h4>CVE-Table</h4>
                     &nbsp;<small>a <a href="http://github.com/cyberpanda">Open Source Project</a></small>
+                    <button id="clearCacheButton" onclick="clearCache()">Refresh Cache</button>
                     <div class="theme-palette-button" onclick="togglePalette()">
                         Theme ▼
                         <div class="theme-palette" id="themePalette">
@@ -462,9 +488,9 @@
                 }
                 paletteVisible = !paletteVisible;
             }
-
             function setTheme(theme) {
                 document.body.className = theme + "-theme";
+                localStorage.setItem("selectedTheme", theme);
             }
             setTheme("dark");
 
@@ -481,8 +507,12 @@
                 })
                     .then((response) => response.json())
                     .then((data) => {
-                        cveData = data.result.CVE_Items;
-                        renderCVEs(cveData);
+                        if (!cachedData || JSON.stringify(data.result.CVE_Items) !== JSON.stringify(cveData)) {
+                            // Update the cached data if it's new
+                            localStorage.setItem("cachedCVEData", JSON.stringify(data.result.CVE_Items));
+                            cveData = data.result.CVE_Items;
+                            renderCVEs(cveData);
+                        }
                     })
                     .catch((error) => console.error(error));
             }
@@ -562,6 +592,18 @@
                 }
             }
 
+            const cachedData = localStorage.getItem("cachedCVEData");
+            const cachedTheme = localStorage.getItem("selectedTheme");
+
+            if (cachedTheme) {
+                setTheme(cachedTheme);
+            }
+
+            if (cachedData) {
+                cveData = JSON.parse(cachedData);
+                renderCVEs(cveData);
+            }
+
             function searchCVEs() {
                 const input = document.getElementById("searchInput");
                 const searchTerm = input.value.toLowerCase();
@@ -596,6 +638,11 @@
             function scrollToTop() {
                 document.body.scrollTop = 0;
                 document.documentElement.scrollTop = 0;
+            }
+
+            function clearCache() {
+                localStorage.removeItem("cachedCVEData");
+                location.reload();
             }
 
             fetchCVEData();
