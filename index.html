@@ -502,7 +502,7 @@
             let cveData = [];
 
             function fetchCVEData() {
-                fetch("https://services.nvd.nist.gov/rest/json/cves/1.0?resultsPerPage=500", {
+                fetch("https://services.nvd.nist.gov/rest/json/cves/2.0?resultsPerPage=500", {
                     method: "GET",
                 })
                     .then((response) => response.json())
