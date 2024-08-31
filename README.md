@@ -4,7 +4,7 @@ powered by [Cyber Panda](https://x.com/realcyberpanda) 🐼
 CVE-Table is your go-to resource for quickly finding information about Common Vulnerabilities and Exposures (CVEs). With a user-friendly interface, it allows you to search for product names, companies, specific strings like "XSS," or even entire CVE IDs. The website provides you with a convenient summary of the CVE, along with hyperlinks to relevant references.
 
 ### -> [DEMO](https://cyberpanda.github.io/)
-> Feel free to remove the powered by CyberPanda tag in your fork if you don't want it. I'm fine with it!
+![](cvetracker.png)
 
 **Key Features:**
 
@@ -15,10 +15,5 @@ CVE-Table is your go-to resource for quickly finding information about Common Vu
 - **Hyperlinked References:** Access a curated list of references related to the CVE, making it easy to further explore and understand the security issue.
 
 ## Changelog:
-
-- Fix CSS Issue#2, add Semi-Darkmode, redesign a bit.
-- Add Color Palette
-New "Themes":
-Purple, Dark, Pink, Rose, Lemon, Mint
-- Fix Issue#12
-- Add new buttons to get filtered search
+- Known Issue: Endpoint delivers old data ascending, need to figure out how to fix this.
+- Redesigned the table and filter interface for a more cohesive look. Removed previous themes and simplified the design to focus on functionality and clarity.
