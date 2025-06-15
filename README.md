@@ -1,7 +1,4 @@
-# Cyber Panda Projects 🚀🐼
-
-Welcome to **Cyber Panda's** project hub — your quick access to innovative web tools and creative experiments. Powered by [Cyber Panda](https://x.com/realcyberpanda) 🐼
-
+# Panda just4fun Projects 🚀🐼
 ---
 
 ## 🚨 CVE Table - Quick CVE Information Resource
@@ -39,7 +36,7 @@ Liquid Glass is a fan-made implementation inspired by Apple’s iconic "liquid g
 | Project       | Description                                       | Demo/Link                              |
 |---------------|-------------------------------------------------|--------------------------------------|
 | CVE Table     | Fast lookup for Common Vulnerabilities and Exposures with detailed info and references. | [View Demo](https://cyberpanda.github.io/cve.html) |
-| Liquid Glass  | Experimental Apple GUI style with distortion, magnifying effects, and animations.  | (Add Demo Link Here)                  |
+| Liquid Glass  | Experimental Apple GUI style with distortion, magnifying effects, and animations.  | [View Demo](https://cyberpanda.github.io/liquid-glass.html)                  |
 
 ---
 
