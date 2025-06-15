@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CVE Table</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #1e1e1e;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            gap: 10px;
+        }
+
+        .search-bar input {
+            padding: 8px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            width: 200px;
+            transition: border-color 0.2s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+        }
+
+        .search-bar input::placeholder {
+            color: #999;
+            transition: opacity 0.2s;
+        }
+
+        .search-bar input:focus::placeholder {
+            opacity: 0;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-button {
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.2s, color 0.2s;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .filter-button.active {
+            color: #fff;
+        }
+
+        .filter-button:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .filter-button.active.filter-critical { background-color: #e53e3e; } /* Red */
+        .filter-button.active.filter-high { background-color: #f6ad55; } /* Orange */
+        .filter-button.active.filter-medium { background-color: #f6e05e; } /* Yellow */
+        .filter-button.active.filter-low { background-color: #48bb78; } /* Green */
+        .filter-button.active.filter-unknown { background-color: #a0aec0; } /* Grey */
+
+        .container-box {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 1200px;
+            margin: 80px auto 20px;
+            box-sizing: border-box;
+        }
+
+        table {
+            table-layout: fixed;
+            width: 100%;
+            border-collapse: collapse;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: #fff;
+        }
+
+        th, td {
+            border: 1px solid #333;
+            padding: 12px;
+            text-align: left;
+            overflow: hidden; /* Hide overflow */
+            text-overflow: ellipsis; /* Add ellipsis for long text */
+            white-space: nowrap; /* Prevent wrapping */
+        }
+
+        th {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        tr:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .description-cell {
+            width: 500px;
+        }
+
+        .severity-cell {
+            width: 100px;
+        }
+
+        .severity-critical { background-color: #e53e3e; color: #fff; }
+        .severity-high { background-color: #f6ad55; color: #000; }
+        .severity-medium { background-color: #f6e05e; color: #000; }
+        .severity-low { background-color: #48bb78; color: #fff; }
+        .severity-unknown { background-color: #a0aec0; color: #000; }
+
+        @media (max-width: 768px) {
+            .search-bar input {
+                width: 100%;
+                font-size: 16px;
+            }
+
+            .filters {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .filter-button {
+                width: 100%;
+                text-align: center;
+            }
+
+            .container-box {
+                margin: 80px 10px 20px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">CVE Table</div>
+        <div class="search-bar">
+            <input type="text" id="search" placeholder="Search CVE..." />
+            <div class="filters">
+                <button class="filter-button filter-critical" id="filter-critical">Critical</button>
+                <button class="filter-button filter-high" id="filter-high">High</button>
+                <button class="filter-button filter-medium" id="filter-medium">Medium</button>
+                <button class="filter-button filter-low" id="filter-low">Low</button>
+                <button class="filter-button filter-unknown" id="filter-unknown">Unknown</button>
+                <button class="filter-button" id="filter-clear">Clear Filters</button>
+            </div>
+        </div>
+    </div>
+    <div class="container-box">
+        <table id="cveTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th class="severity-cell">Severity</th>
+                    <th class="description-cell">Description</th>
+                    <th>CVSS Score</th>
+                    <th>References</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        async function fetchCVEData(resultsPerPage = 200) {
+            try {
+                const response = await fetch(`https://services.nvd.nist.gov/rest/json/cves/2.0?resultsPerPage=${resultsPerPage}`);
+                /*TODO: Fix issue: NIST endpoint delivers old CVEs ascending, I still dunno why or how to ask properly for data yet*/
+                const data = await response.json();
+                return data.vulnerabilities.map(vuln => {
+                    const cve = vuln.cve;
+                    const score = cve.metrics.cvssMetricV2 ? cve.metrics.cvssMetricV2[0].cvssData.baseScore : 'N/A';
+                    let severity = 'unknown';
+                    if (score !== 'N/A') {
+                        if (score >= 9.0) severity = 'critical';
+                        else if (score >= 7.0) severity = 'high';
+                        else if (score >= 4.0) severity = 'medium';
+                        else if (score >= 0.1) severity = 'low';
+                    }
+                    return {
+                        id: cve.id || 'N/A',
+                        description: (cve.descriptions.find(desc => desc.lang === 'en')?.value || 'N/A'),
+                        cvssScore: score,
+                        references: cve.references?.map(ref => `<a href="${ref.url}" target="_blank">${ref.url}</a>`).join(', ') || 'N/A',
+                        severity: severity
+                    };
+                });
+            } catch (error) {
+                console.error('Error fetching CVE data:', error);
+                return [];
+            }
+        }
+
+        function displayTable(cveData) {
+            const cveTableBody = document.getElementById('cveTable').getElementsByTagName('tbody')[0];
+            cveTableBody.innerHTML = '';
+
+            cveData.forEach(cve => {
+                const row = cveTableBody.insertRow();
+                row.insertCell(0).innerText = cve.id;
+                const severityCell = row.insertCell(1);
+                severityCell.innerText = cve.severity.charAt(0).toUpperCase() + cve.severity.slice(1);
+                severityCell.className = `severity-${cve.severity}`;
+                row.insertCell(2).innerText = cve.description;
+                row.insertCell(3).innerText = cve.cvssScore;
+                row.insertCell(4).innerHTML = cve.references; // Using innerHTML to allow for clickable links
+            });
+        }
+
+        const activeSeverities = new Set();
+
+        document.querySelectorAll('.filter-button').forEach(button => {
+            button.addEventListener('click', () => {
+                if (button.id === 'filter-clear') {
+                    activeSeverities.clear();
+                    document.querySelectorAll('.filter-button').forEach(btn => {
+                        btn.classList.remove('active');
+                        btn.classList.remove('filter-critical', 'filter-high', 'filter-medium', 'filter-low', 'filter-unknown');
+                        btn.style.backgroundColor = '';
+                    });
+                } else {
+                    const severity = button.id.replace('filter-', '').toLowerCase();
+                    if (activeSeverities.has(severity)) {
+                        activeSeverities.delete(severity);
+                        button.classList.remove('active');
+                        button.classList.remove(`filter-${severity}`);
+                    } else {
+                        activeSeverities.add(severity);
+                        button.classList.add('active');
+                        button.classList.add(`filter-${severity}`);
+                    }
+                }
+                filterAndDisplayTable();
+            });
+        });
+
+        document.querySelector('#search').addEventListener('input', () => {
+            filterAndDisplayTable();
+        });
+
+        async function filterAndDisplayTable() {
+            const searchTerm = document.querySelector('#search').value.toLowerCase();
+            const cveData = await fetchCVEData(); // Default fetch with 200 results
+
+            // Filter data based on active severities and search term
+            const filteredData = cveData.filter(cve => {
+                const matchesSeverity = activeSeverities.size === 0 || activeSeverities.has(cve.severity?.toLowerCase());
+                const matchesSearch = cve.id.toLowerCase().includes(searchTerm) || cve.description.toLowerCase().includes(searchTerm);
+                return matchesSeverity && matchesSearch;
+            });
+
+            displayTable(filteredData);
+        }
+
+        // Initialize the table with data on page load
+        filterAndDisplayTable();
+    </script>
+</body>
+</html>
