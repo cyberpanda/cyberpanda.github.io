@@ -1,19 +1,60 @@
-# CVE Table - Your quick CVE Information Resource
-powered by [Cyber Panda](https://x.com/realcyberpanda) 🐼
+# Cyber Panda Projects 🚀🐼
 
-CVE-Table is your go-to resource for quickly finding information about Common Vulnerabilities and Exposures (CVEs). With a user-friendly interface, it allows you to search for product names, companies, specific strings like "XSS," or even entire CVE IDs. The website provides you with a convenient summary of the CVE, along with hyperlinks to relevant references.
+Welcome to **Cyber Panda's** project hub — your quick access to innovative web tools and creative experiments. Powered by [Cyber Panda](https://x.com/realcyberpanda) 🐼
 
-### -> [DEMO](https://cyberpanda.github.io/)
-![](cvetracker.png)
+---
 
-**Key Features:**
+## 🚨 CVE Table - Quick CVE Information Resource
 
-- **Quick Lookup:** Easily find information on CVEs by entering product names, company names, strings, or complete CVE IDs.
+[CVE Table Demo](https://cyberpanda.github.io/cve.html)
 
-- **Comprehensive Summaries:** Get detailed information and descriptions of the CVEs you search for.
 
-- **Hyperlinked References:** Access a curated list of references related to the CVE, making it easy to further explore and understand the security issue.
+**Description:**  
+CVE Table is your go-to resource for quickly finding detailed information about Common Vulnerabilities and Exposures (CVEs). Search by product name, company, keyword (like "XSS"), or full CVE IDs to get comprehensive summaries and hyperlinked references for further exploration.
 
-## Changelog:
-- Known Issue: Endpoint delivers old data ascending, need to figure out how to fix this.
-- Redesigned the table and filter interface for a more cohesive look. Removed previous themes and simplified the design to focus on functionality and clarity.
+**Key Features:**  
+- Quick lookup by product, company, keywords, or CVE ID  
+- Comprehensive CVE summaries and detailed descriptions  
+- Curated, clickable references to learn more  
+
+**Known Issues:**  
+- The backend endpoint currently delivers data in ascending order (older first). Working on fixing this for better UX.  
+- Redesigned table and filter UI for clarity and simplicity; removed previous themes to focus on functionality.
+
+---
+
+## 💧 Liquid Glass – Apple GUI Inspired Playground
+
+**Live Demo:** [View Demo](http://cyberpanda.github.io/liquid-glass.html)
+
+**Description:**  
+Liquid Glass is a fan-made implementation inspired by Apple’s iconic "liquid glass" GUI style. It features distortion and magnifying glass effects, smooth animations, and interactive elements — designed as a playground to better understand this beautiful UI concept.
+
+> **Note:** This is a personal project meant to showcase the effect and experiment with it. All copyrights and trademarks belong to Apple Inc. This is not an official Apple product.
+
+---
+
+## 🔗 Quick Links
+
+| Project       | Description                                       | Demo/Link                              |
+|---------------|-------------------------------------------------|--------------------------------------|
+| CVE Table     | Fast lookup for Common Vulnerabilities and Exposures with detailed info and references. | [View Demo](https://cyberpanda.github.io/cve.html) |
+| Liquid Glass  | Experimental Apple GUI style with distortion, magnifying effects, and animations.  | (Add Demo Link Here)                  |
+
+---
+
+## About Cyber Panda
+
+I'm a IT Security profesional and UI/UX enthusiast passionate about building useful tools and creative web experiments.
+
+---
+
+## License
+
+All projects are open for personal use and learning. Please respect copyrights, especially regarding trademarked designs like Liquid Glass.
+
+---
+
+Thanks for stopping by!  
+🐼💻  
+Panda  
