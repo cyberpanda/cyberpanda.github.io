@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Liquid Gl🐼ss</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      overflow: hidden;
+      user-select: none;
+      font-family: sans-serif;
+    }
+    body {
+      background: url('https://images.unsplash.com/photo-1647285467535-f57aa912ebe8?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
+      background-size: cover;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: grab;
+      transform: scaleY(-1);
+    }
+    #sliderContainer {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 8px;
+      padding: 10px 15px;
+      color: white;
+      font-family: sans-serif;
+      user-select: none;
+      z-index: 10;
+      max-width: 320px;
+    }
+    #sliderContainer label {
+      font-size: 14px;
+      margin-right: 8px;
+      display: inline-block;
+      width: 90px;
+    }
+    #sliderContainer input[type=range] {
+      vertical-align: middle;
+      cursor: pointer;
+      width: 180px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div id="sliderContainer">
+    <label for="expandLeftSlider">Expand Left:</label>
+    <input type="range" id="expandLeftSlider" min="0" max="1" step="0.01" value="0"><br>
+    <label for="expandRightSlider">Expand Right:</label>
+    <input type="range" id="expandRightSlider" min="0" max="1" step="0.01" value="0"><br>
+    <label for="expandTopSlider">Expand Top:</label>
+    <input type="range" id="expandTopSlider" min="0" max="1" step="0.01" value="0"><br>
+    <label for="expandBottomSlider">Expand Bottom:</label>
+    <input type="range" id="expandBottomSlider" min="0" max="1" step="0.01" value="0"><br>
+    <label for="opacitySlider">Opacity:</label>
+    <input type="range" id="opacitySlider" min="0" max="1" step="0.01" value="1"><br>
+    <label for="distortSlider">Distortion:</label>
+    <input type="range" id="distortSlider" min="0" max="0.05" step="0.001" value="0.025"><br>
+    <label for="modeToggle">Creative Mode:</label>
+    <input type="checkbox" id="modeToggle" checked>
+  </div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('c');
+  const gl = canvas.getContext('webgl');
+  if (!gl) return alert('WebGL not supported');
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const vsSource = `
+    attribute vec4 a_position;
+    varying vec2 v_uv;
+    void main() {
+      v_uv = a_position.xy * 0.5 + 0.5;
+      gl_Position = a_position;
+    }
+  `;
+
+  const fsSource = `
+    precision highp float;
+    varying vec2 v_uv;
+    uniform sampler2D u_bg;
+    uniform sampler2D u_text;
+    uniform vec2 u_dropPos;
+    uniform vec4 u_dropSize; // left, right, top, bottom half sizes in px
+    uniform vec2 u_resolution;
+    uniform float u_distortAmount;
+    uniform float u_opacity;
+
+    float roundedRectDist(vec2 p, vec4 size, float radius) {
+      float dx = max(abs(p.x) - (p.x < 0.0 ? size.x : size.y), 0.0);
+      float dy = max(abs(p.y) - (p.y < 0.0 ? size.z : size.w), 0.0);
+      float outsideDist = length(vec2(dx, dy));
+      float insideDist = min(max(dx, dy), 0.0);
+      return outsideDist - radius + insideDist;
+    }
+
+    void main() {
+      vec2 fragPos = v_uv * u_resolution;
+      vec2 posRel = fragPos - u_dropPos;
+
+      float radius = 15.0;
+      float dist = roundedRectDist(posRel, u_dropSize, radius);
+
+      vec2 bgUV = v_uv;
+      vec4 bgColor = texture2D(u_bg, bgUV);
+
+      if(dist > 0.0) {
+        gl_FragColor = bgColor;
+        return;
+      }
+
+      vec2 dir = normalize(posRel);
+
+      float edgeFactor = smoothstep(-radius, 0.0, dist);
+
+      float dispAmount = u_distortAmount * (1.0 - edgeFactor);
+      vec2 refractedUV = v_uv + dir * dispAmount;
+      refractedUV = clamp(refractedUV, 0.0, 1.0);
+
+      vec4 magnifiedColor = texture2D(u_bg, refractedUV);
+
+      vec2 textUV = vec2(
+        (posRel.x + u_dropSize.x) / (u_dropSize.x + u_dropSize.y),
+        1.0 - (posRel.y + u_dropSize.z) / (u_dropSize.z + u_dropSize.w)
+      );
+
+      vec4 textColor = texture2D(u_text, textUV);
+
+      vec3 finalColor = mix(magnifiedColor.rgb, vec3(1.0), textColor.a);
+
+      float edgeGlow = smoothstep(-5.0, 0.0, dist);
+      finalColor = mix(finalColor, vec3(1.0), edgeGlow * 0.4);
+
+      gl_FragColor = vec4(finalColor, u_opacity);
+    }
+  `;
+
+  function compileShader(type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.error(gl.getShaderInfoLog(shader));
+      gl.deleteShader(shader);
+      return null;
+    }
+    return shader;
+  }
+
+  function createProgram(vsSource, fsSource) {
+    const program = gl.createProgram();
+    const vShader = compileShader(gl.VERTEX_SHADER, vsSource);
+    const fShader = compileShader(gl.FRAGMENT_SHADER, fsSource);
+    gl.attachShader(program, vShader);
+    gl.attachShader(program, fShader);
+    gl.linkProgram(program);
+    if(!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error(gl.getProgramInfoLog(program));
+      return null;
+    }
+    gl.useProgram(program);
+    return program;
+  }
+
+  const program = createProgram(vsSource, fsSource);
+
+  const posBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+    -1,-1, 1,-1, -1,1,
+    -1,1, 1,-1, 1,1
+  ]), gl.STATIC_DRAW);
+
+  const posLoc = gl.getAttribLocation(program, 'a_position');
+  gl.enableVertexAttribArray(posLoc);
+  gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+  const u_bgLoc = gl.getUniformLocation(program, 'u_bg');
+  const u_textLoc = gl.getUniformLocation(program, 'u_text');
+  const u_dropPosLoc = gl.getUniformLocation(program, 'u_dropPos');
+  const u_dropSizeLoc = gl.getUniformLocation(program, 'u_dropSize');
+  const u_resolutionLoc = gl.getUniformLocation(program, 'u_resolution');
+  const u_distortAmountLoc = gl.getUniformLocation(program, 'u_distortAmount');
+  const u_opacityLoc = gl.getUniformLocation(program, 'u_opacity');
+
+  // Background image
+  const bgImage = new Image();
+  bgImage.crossOrigin = 'anonymous';
+  bgImage.src = 'https://images.unsplash.com/photo-1647285467535-f57aa912ebe8?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+
+  // Text mask canvas for alpha mask
+  const textCanvas = document.createElement('canvas');
+  const textCtx = textCanvas.getContext('2d');
+
+  const baseWidth = 180;
+  const baseHeight = 60;
+  const expandedMaxLeft = 200;
+  const expandedMaxRight = 200;
+  const expandedMaxTop = 50;
+  const expandedMaxBottom = 50;
+
+  // Initialize text canvas to base size
+  textCanvas.width = baseWidth;
+  textCanvas.height = baseHeight;
+
+  function drawText(width, height) {
+    textCanvas.width = Math.round(width);
+    textCanvas.height = Math.round(height);
+    textCtx.clearRect(0, 0, textCanvas.width, textCanvas.height);
+
+    // Flip text canvas vertically to fix inversion
+    textCtx.save();
+    textCtx.scale(1, -1);
+    textCtx.translate(0, -textCanvas.height);
+
+    textCtx.font = 'bold 28px sans-serif';
+    textCtx.textAlign = 'center';
+    textCtx.textBaseline = 'middle';
+    textCtx.fillStyle = 'white';
+    textCtx.fillText('🐼 Panda', textCanvas.width / 2, textCanvas.height / 2);
+
+    textCtx.restore();
+  }
+  drawText(baseWidth, baseHeight);
+
+  let bgTexture, textTexture;
+
+  // Starting position center
+  let dropX = window.innerWidth / 2;
+  let dropY = window.innerHeight / 2;
+
+  // Half sizes of magnifier - will adjust based on sliders
+  let halfLeft = baseWidth / 2;
+  let halfRight = baseWidth / 2;
+  let halfTop = baseHeight / 2;
+  let halfBottom = baseHeight / 2;
+
+  let dragging = false;
+
+  // Sliders
+  const expandLeftSlider = document.getElementById('expandLeftSlider');
+  const expandRightSlider = document.getElementById('expandRightSlider');
+  const expandTopSlider = document.getElementById('expandTopSlider');
+  const expandBottomSlider = document.getElementById('expandBottomSlider');
+  const opacitySlider = document.getElementById('opacitySlider');
+  const distortSlider = document.getElementById('distortSlider');
+  const modeToggle = document.getElementById('modeToggle');
+
+  let expandLeftTarget = 0;
+  let expandRightTarget = 0;
+  let expandTopTarget = 0;
+  let expandBottomTarget = 0;
+
+  let expandLeftCurrent = 0;
+  let expandRightCurrent = 0;
+  let expandTopCurrent = 0;
+  let expandBottomCurrent = 0;
+
+  // Load image to WebGL texture helper
+  function createTexture(img) {
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texImage2D(
+      gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
+      gl.UNSIGNED_BYTE, img
+    );
+    return tex;
+  }
+
+  bgImage.onload = () => {
+    bgTexture = createTexture(bgImage);
+  };
+
+  // Create texture from text canvas
+  function updateTextTexture() {
+    if(textTexture) gl.deleteTexture(textTexture);
+    textTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, textTexture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texImage2D(
+      gl.TEXTURE_2D, 0, gl.RGBA,
+      gl.RGBA, gl.UNSIGNED_BYTE, textCanvas
+    );
+  }
+  updateTextTexture();
+
+  // Event handlers for dragging the magnifier
+  canvas.addEventListener('mousedown', e => {
+    dragging = true;
+    canvas.style.cursor = 'grabbing';
+  });
+  window.addEventListener('mouseup', e => {
+    dragging = false;
+    canvas.style.cursor = 'grab';
+  });
+  window.addEventListener('mousemove', e => {
+    if(dragging) {
+      if(dragging) {
+    dropX = e.clientX;
+    dropY = window.innerHeight - e.clientY; // flip Y to match inverted page
+  }
+    }
+  });
+
+  // Animation state for bouncing effect
+  let bounceTime = 0;
+
+  // Animate slider targets smoothly
+  expandLeftSlider.addEventListener('input', () => expandLeftTarget = parseFloat(expandLeftSlider.value));
+  expandRightSlider.addEventListener('input', () => expandRightTarget = parseFloat(expandRightSlider.value));
+  expandTopSlider.addEventListener('input', () => expandTopTarget = parseFloat(expandTopSlider.value));
+  expandBottomSlider.addEventListener('input', () => expandBottomTarget = parseFloat(expandBottomSlider.value));
+
+  opacitySlider.addEventListener('input', () => {});
+  distortSlider.addEventListener('input', () => {});
+  modeToggle.addEventListener('change', () => {});
+
+  function lerp(a,b,t){return a+(b - a)*t;}
+
+  function draw() {
+    if (!bgTexture || !textTexture) {
+      requestAnimationFrame(draw);
+      return;
+    }
+
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // Smooth expand values towards targets
+    expandLeftCurrent = lerp(expandLeftCurrent, expandLeftTarget, 0.1);
+    expandRightCurrent = lerp(expandRightCurrent, expandRightTarget, 0.1);
+    expandTopCurrent = lerp(expandTopCurrent, expandTopTarget, 0.1);
+    expandBottomCurrent = lerp(expandBottomCurrent, expandBottomTarget, 0.1);
+
+    // Calculate current sizes in px including bouncing animation if enabled
+    const modeCreative = modeToggle.checked;
+    bounceTime += 0.03;
+
+    // Base half sizes with bounce on vertical sides only
+    const baseHalfLeft = baseWidth / 2;
+    const baseHalfRight = baseWidth / 2;
+    const baseHalfTop = baseHeight / 2;
+    const baseHalfBottom = baseHeight / 2;
+
+    let bounceOffsetTop = 0;
+    let bounceOffsetBottom = 0;
+    if (modeCreative) {
+      bounceOffsetTop = 10 * Math.sin(bounceTime);
+      bounceOffsetBottom = 10 * Math.cos(bounceTime * 1.3);
+    }
+
+    halfLeft = baseHalfLeft + expandLeftCurrent * expandedMaxLeft;
+    halfRight = baseHalfRight + expandRightCurrent * expandedMaxRight;
+    halfTop = baseHalfTop + expandTopCurrent * expandedMaxTop + bounceOffsetTop;
+    halfBottom = baseHalfBottom + expandBottomCurrent * expandedMaxBottom + bounceOffsetBottom;
+
+    // Update text canvas size with current width and height
+    drawText(halfLeft + halfRight, halfTop + halfBottom);
+    updateTextTexture();
+
+    // Bind textures
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, bgTexture);
+    gl.uniform1i(u_bgLoc, 0);
+
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, textTexture);
+    gl.uniform1i(u_textLoc, 1);
+
+    // Uniforms
+    gl.uniform2f(u_dropPosLoc, dropX, canvas.height - dropY);
+    gl.uniform4f(u_dropSizeLoc, halfLeft, halfRight, halfTop, halfBottom);
+    gl.uniform2f(u_resolutionLoc, canvas.width, canvas.height);
+    gl.uniform1f(u_distortAmountLoc, parseFloat(distortSlider.value));
+    gl.uniform1f(u_opacityLoc, parseFloat(opacitySlider.value));
+
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
+</script>
+</body>
+</html>
