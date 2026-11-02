@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>404 – access denied by reality</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#07090c;--fg:#d7f5e6;--mute:#7f8ea3;--acc:#38e0a0;--red:#ff4d6d;--y:#febc2e;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--fg);font:15px/1.6 var(--mono)}
+body{display:grid;place-items:center;min-height:100dvh;padding:24px max(16px,env(safe-area-inset-left))}
+canvas{position:fixed;inset:0;z-index:0;opacity:.14;pointer-events:none}
+.box{position:relative;z-index:1;width:min(720px,100%);background:#0b1016;border:1px solid #1f2a33;border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(56,224,160,.08);overflow:hidden}
+.bar{display:flex;gap:8px;align-items:center;padding:10px 14px;background:#111821;border-bottom:1px solid #1f2a33;color:var(--mute);font-size:12px}
+.bar i{width:12px;height:12px;border-radius:50%;display:inline-block}.bar i:nth-child(1){background:#ff5f57}.bar i:nth-child(2){background:#febc2e}.bar i:nth-child(3){background:#28c840}.bar span{margin-left:auto}
+.body{padding:20px 20px 24px}
+pre{margin:0;white-space:pre-wrap;word-break:break-word}
+h1{font-size:clamp(46px,12vw,96px);margin:6px 0 0;line-height:1;color:var(--red);text-shadow:2px 0 #38e0a0,-2px 0 #7aa2ff;animation:gl 2.4s infinite steps(1)}
+@keyframes gl{0%,92%{transform:none}93%{transform:translate(2px,-1px) skewX(4deg)}95%{transform:translate(-2px,1px)}97%{transform:none}}
+.big{font-size:clamp(18px,3.6vw,24px);color:#fff;margin:10px 0 4px;font-weight:700}
+.g{color:var(--acc)}.r{color:var(--red)}.y{color:var(--y)}.m{color:var(--mute)}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+a.b{color:var(--bg);background:var(--acc);text-decoration:none;font-weight:700;padding:10px 14px;border-radius:10px}
+a.o{color:var(--fg);border:1px solid #2a3846;text-decoration:none;padding:10px 14px;border-radius:10px}
+a:hover{filter:brightness(1.1)}
+.cur{display:inline-block;width:9px;height:1.1em;background:var(--acc);vertical-align:text-bottom;animation:b 1s steps(1) infinite}@keyframes b{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){h1,.cur{animation:none}canvas{display:none}}
+</style>
+</head>
+<body>
+<canvas id="m" aria-hidden="true"></canvas>
+<main class="box">
+  <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span>root@cyberpanda:~# nmap -p- this-page</span></div>
+  <div class="body">
+    <pre class="m" id="log" aria-hidden="true"></pre>
+    <h1>404</h1>
+    <p class="big">You messed up, bot. 🤖🐼</p>
+    <pre>What you’re looking for <span class="r">isn’t here</span>. <span class="y">Try harder lol.</span>
+
+<span class="m">$ whois you</span>
+<span class="g">→</span> probably a human who mistyped a URL
+<span class="g">→</span> or a scanner looking for /wp-admin on a static site 🙃
+
+<span class="m">$ cat /hint.txt</span>
+<span class="g">→</span> recon tip: the real loot is on the homepage<span class="cur"></span></pre>
+    <div class="btns">
+      <a class="b" href="/">cd ~ (home)</a>
+      <a class="o" href="/kotoba.html">Kotoba</a>
+      <a class="o" href="/cyba-delta/">CYBA Delta</a>
+      <a class="o" href="/cve.html">CVE Table</a>
+      <a class="o" href="/liquid-glass.html">Liquid Glass</a>
+    </div>
+  </div>
+</main>
+<script>
+(() => {
+  const p = location.pathname, log = document.getElementById("log");
+  const lines = [`[*] GET ${p.replace(/[<>&]/g, "")}`, "[*] fuzzing paths… /admin /backup.zip /.env /flag.txt", "[-] 0 results. this site has no secrets, only bamboo 🎋", ""];
+  let i = 0; const step = () => { if (i < lines.length) { log.textContent += lines[i++] + "\n"; setTimeout(step, 260); } }; step();
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = document.getElementById("m"), x = c.getContext("2d"), fs = 16; let d;
+  const r = () => { c.width = innerWidth; c.height = innerHeight; d = Array(Math.ceil(c.width / fs)).fill(0).map(() => Math.random() * -40); }; r(); addEventListener("resize", r);
+  setInterval(() => { x.fillStyle = "rgba(7,9,12,.1)"; x.fillRect(0, 0, c.width, c.height); x.fillStyle = "#38e0a0"; x.font = fs + "px monospace";
+    d.forEach((y, k) => { x.fillText("01404🐼"[Math.floor(Math.random() * 6)] || "0", k * fs, y * fs); d[k] = y * fs > c.height && Math.random() > .975 ? 0 : y + 1; }); }, 55);
+})();
+</script>
+</body>
+</html>

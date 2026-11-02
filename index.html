@@ -1,330 +1,175 @@
-<!DOCTYPE html>
-<html lang="de" >
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Welcome to my GitHub</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-    body, html {
-      margin: 0; padding: 0; height: 100%;
-      overflow: hidden;
-      font-family: 'Share Tech Mono', monospace;
-      background: #000;
-      color: #00ff91;
-      position: relative;
-      user-select: none;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      gap: 2rem;
-      padding: 1rem;
-      box-sizing: border-box;
-      min-height: 100vh;
-    }
-
-    canvas#matrix {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 0;
-      opacity: 0.15;
-      pointer-events: none;
-      filter: drop-shadow(0 0 0.7px #00ff91);
-    }
-
-    h1 {
-      font-size: 3.5rem;
-      margin-bottom: 0;
-      color: #00ff91;
-      text-shadow:
-        0 0 1.5px #00ff91,
-        0 0 3px #00ff91,
-        0 0 5px #00ff91;
-      user-select: text;
-      text-align: center;
-    }
-
-    p {
-      font-size: 1.5rem;
-      margin-top: 0;
-      color: #a0ffcb;
-      text-shadow: 0 0 0.8px #00ff91;
-      user-select: text;
-      text-align: center;
-    }
-
-    /* Button Container mit fixer Breite der Buttons */
-    .button-container {
-      display: flex;
-      gap: 1.5rem;
-      justify-content: center;
-      max-width: 580px; /* Breite genau passend für 3 Buttons */
-      width: 100%;
-    }
-
-    a.button {
-      flex: 1 1 0;
-      background: #001f22;
-      color: #00ff91;
-      font-weight: 700;
-      text-decoration: none;
-      padding: 1em 0;
-      border-radius: 12px;
-      box-shadow:
-        0 0 3px #00ff91,
-        inset 0 0 5px #00ff91;
-      font-size: 1.25rem;
-      border: 2px solid #00ff91;
-      text-align: center;
-      transition:
-        background 0.3s ease,
-        box-shadow 0.3s ease,
-        color 0.3s ease,
-        transform 0.2s ease;
-      user-select: none;
-      min-width: 160px;
-      max-width: 190px;
-    }
-
-    a.button:hover,
-    a.button:focus {
-      background: #00ff91;
-      color: #001f22;
-      box-shadow:
-        0 0 10px #00ff91,
-        inset 0 0 10px #00ff91;
-      transform: scale(1.05);
-      outline: none;
-    }
-
-    /* Terminal window container */
-    .terminal-window {
-      position: relative;
-      width: 580px; /* genau wie Buttons container max-width */
-      background: #001f22;
-      border-radius: 10px;
-      box-shadow:
-        0 0 12px #00ff91,
-        inset 0 0 15px #00ff91;
-      border: 2px solid #00ff91;
-      font-family: 'Share Tech Mono', monospace;
-      color: #00ff91;
-      user-select: text;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      min-height: 120px;
-      margin: 0 auto;
-    }
-
-    /* Mac style top bar */
-    .terminal-header {
-      background: #002928;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      gap: 8px;
-      border-bottom: 1px solid #00ff91;
-      user-select: none;
-    }
-
-    .dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      box-shadow: 0 0 6px #00ff91;
-      cursor: default;
-    }
-
-    .dot.close {
-      background: #ff5f56;
-    }
-    .dot.minimize {
-      background: #ffbd2e;
-    }
-    .dot.maximize {
-      background: #27c93f;
-    }
-
-    /* Terminal body */
-    .terminal-body {
-      flex: 1;
-      padding: 1em 1.5em;
-      font-size: 1.2rem;
-      line-height: 1.4;
-      white-space: nowrap;
-      position: relative;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      overflow: hidden;
-    }
-
-    /* Fixierter $ Prompt links */
-    .prompt {
-      flex-shrink: 0;
-      color: #00ff91;
-      font-weight: 700;
-      user-select: none;
-    }
-
-    /* Textbereich tippt hier */
-    .typed-text {
-      overflow: hidden;
-      white-space: nowrap;
-      user-select: text;
-      flex-grow: 1;
-      min-width: 0;
-    }
-
-    /* Blinking cursor */
-    .cursor {
-      display: inline-block;
-      width: 10px;
-      background-color: #00ff91;
-      margin-left: 2px;
-      animation: blink 1s step-start infinite;
-      vertical-align: bottom;
-      height: 1.3em;
-      border-radius: 2px;
-      user-select: none;
-    }
-
-    @keyframes blink {
-      0%, 50% { opacity: 1; }
-      50.1%, 100% { opacity: 0; }
-    }
-
-    /* Responsive */
-    @media (max-width: 650px) {
-      .button-container, .terminal-window {
-        width: 90vw;
-      }
-      a.button {
-        max-width: none;
-        min-width: auto;
-        flex: 1 1 100%;
-      }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Panda 🐼 – hobby projects</title>
+<meta name="description" content="Panda’s free-time AI projects, shared as a hobby: Kotoba, CYBA Delta, CVE Table, Liquid Glass – open source, contributions welcome.">
+<meta name="theme-color" content="#0b0d12" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f6f7fa" media="(prefers-color-scheme: light)">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/panda-512.jpg">
+<link rel="canonical" href="https://cyberpanda.github.io/">
+<meta property="og:title" content="Panda 🐼 – hobby projects">
+<meta property="og:description" content="Kotoba, CYBA Delta, CVE Table, Liquid Glass – open source and running in your browser.">
+<meta property="og:image" content="https://cyberpanda.github.io/assets/img/kotoba-desktop.webp">
+<meta property="og:url" content="https://cyberpanda.github.io/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@realcyberpanda">
+<link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body>
-  <canvas id="matrix"></canvas>
+<a class="skip" href="#main">Skip to content</a>
+<canvas id="matrix" aria-hidden="true"></canvas>
 
-  <h1>🐼 Welcome to my GitHub 🐼</h1>
-  <p>Please select where you want to go:</p>
-
-  <div class="button-container" role="navigation" aria-label="Site navigation buttons">
-    <a class="button" href="https://github.com/cyberpanda" target="_blank" rel="noopener noreferrer">GitHub Page</a>
-    <a class="button" href="cve.html">CVE Page</a>
-    <a class="button" href="liquid-glass.html">Liquid Glass</a>
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="./"><img class="ava" src="assets/img/panda.webp" alt="" width="32" height="32">Panda 🐼</a>
+    <nav aria-label="Main">
+      <a href="#apps">Apps</a>
+      <a href="#projects">Projects</a>
+      <a class="hide-s" href="#pages">All pages</a>
+      <a href="https://github.com/cyberpanda" rel="noopener">GitHub</a>
+    </nav>
   </div>
+</header>
 
-  <div class="terminal-window" role="region" aria-label="Matrix quote terminal">
-    <div class="terminal-header" aria-hidden="true">
-      <div class="dot close" title="Close"></div>
-      <div class="dot minimize" title="Minimize"></div>
-      <div class="dot maximize" title="Maximize"></div>
+<main id="main">
+  <section class="hero">
+    <div class="wrap split">
+      <div>
+        <div class="who"><img src="assets/img/panda.webp" alt="Panda – profile picture" width="56" height="56"><div><b>Panda 🐼</b><span>@realcyberpanda · hobby projects</span></div></div>
+        <h1>Free-time projects,<br><span class="grad">shared for fun.</span></h1>
+        <p class="lead">Things I build with AI in my spare time – shared as a hobby. Everything is open source: look around, use it, fork it, and help make it better.</p>
+        <div class="btns">
+          <a class="btn pri" href="#apps">See the projects</a>
+          <a class="btn" href="https://github.com/cyberpanda" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.19-3.08-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.08 0 4.41-2.69 5.38-5.26 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>GitHub</a>
+          <a class="btn" href="https://x.com/realcyberpanda" rel="noopener">𝕏 @realcyberpanda</a>
+        </div>
+      </div>
+
+      <div class="tw" id="term" role="region" aria-label="Interactive terminal – type help">
+        <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span>panda@github-pages: ~</span></div>
+        <div class="out" id="out" aria-live="polite"></div>
+        <form class="in" id="tform" autocomplete="off"><span class="p" aria-hidden="true">panda@gh:~$</span><label class="skip" for="cmd">Command</label><input id="cmd" spellcheck="false" autocapitalize="off" enterkeyhint="send" placeholder="type help"></form>
+        <div class="sugg" id="sugg"></div>
+      </div>
     </div>
-    <div class="terminal-body" id="terminal-body" aria-live="polite" aria-atomic="true" aria-relevant="text">
-      <span class="prompt">$</span><span class="typed-text"></span><span class="cursor"></span>
+  </section>
+
+  <section id="apps">
+    <div class="wrap">
+      <p class="eyebrow">Apps</p>
+      <h2>Standalone apps</h2>
+      <p class="sub">Hobby apps you can open right here – no install, no account.</p>
+
+      <article class="feat reveal">
+        <div>
+          <div class="app"><img src="kotoba-icon-192.png" alt="Kotoba icon" width="56" height="56"><h3>Kotoba <span>言葉</span></h3></div>
+          <p>Learn Japanese – playfully, step by step. Lessons and a learning path to JLPT N5, reading with furigana, kana &amp; kanji, games, an RPG across Japan and calm chill modes.</p>
+          <ul class="ticks">
+            <li>Works offline · no ads · no tracking</li>
+            <li>English &amp; German interface, read-aloud</li>
+            <li>Install on your phone or as a native app</li>
+          </ul>
+          <ul class="chips" aria-label="Platforms">
+            <li>Web</li><li>iPhone &amp; iPad</li><li>Android</li><li>macOS</li><li>Windows</li><li>Linux</li>
+          </ul>
+          <div class="btns">
+            <a class="btn kot" href="kotoba.html">▶ Open Kotoba</a>
+            <a class="btn" href="https://github.com/cyberpanda/kotoba/releases" rel="noopener">Download apps</a>
+            <a class="btn" href="https://github.com/cyberpanda/kotoba" rel="noopener">Source</a>
+          </div>
+        </div>
+        <div class="shots">
+          <img class="desk" src="assets/img/kotoba-rpg.webp" alt="Kotoba RPG in front of Tokyo Station" width="1200" height="750" loading="lazy">
+          <img class="phone p1" src="assets/img/kotoba-welcome.webp" alt="Kotoba welcome screen" width="390" height="844" loading="lazy">
+          <img class="phone p2" src="assets/img/kotoba-home.webp" alt="Kotoba today screen in dark mode" width="390" height="844" loading="lazy">
+        </div>
+      </article>
+
+      <div class="apps">
+        <article class="app-card reveal">
+          <a class="thumb" href="cyba-delta/"><img src="assets/img/cyba-delta.webp" alt="CYBA Delta flows overview" width="1200" height="737" loading="lazy"></a>
+          <div class="body">
+            <div class="ah"><img src="assets/img/cyba-delta-icon.png" alt="" width="44" height="44"><div><h3>CYBA Delta</h3><span class="muted small" style="color:var(--mute);font-size:14px">Quiet automation for security operations</span></div></div>
+            <p>Events come in from any SIEM, the routine SOC work happens through readable flows, and every customer’s own tools get the result – tickets, chat, mail, firewall. Humans stay in the loop.</p>
+            <ul class="chips" aria-label="Highlights"><li>Flows &amp; templates</li><li>Per-customer profiles</li><li>Wazuh · Splunk</li><li>Zammad · Jira · Teams</li></ul>
+            <div class="btns">
+              <a class="btn pri" href="cyba-delta/">▶ Live demo</a>
+              <a class="btn" href="https://github.com/cyberpanda/cyba-delta" rel="noopener">Source</a>
+            </div>
+          </div>
+        </article>
+
+        <div class="soon reveal">
+          <span class="big" aria-hidden="true">🚧</span>
+          <h3>More apps on the way</h3>
+          <p>More side projects are in the workshop. Ideas, issues and pull requests are always welcome.</p>
+          <span class="pulse">building…</span>
+          <div class="btns"><a class="btn" href="https://github.com/cyberpanda?tab=repositories" rel="noopener">Browse repos</a><a class="btn" href="https://x.com/realcyberpanda" rel="noopener">Updates on 𝕏</a></div>
+        </div>
+      </div>
     </div>
+  </section>
+
+  <section id="projects">
+    <div class="wrap">
+      <p class="eyebrow">Tools &amp; experiments</p>
+      <h2>Projects</h2>
+      <p class="sub">Smaller experiments and UI playgrounds.</p>
+      <div class="grid two">
+        <a class="card reveal" href="cve.html">
+          <div class="thumb"><img src="assets/img/cve-table.webp" alt="CVE Table screenshot" width="1200" height="750" loading="lazy"></div>
+          <div class="body">
+            <h3>🚨 CVE Table</h3>
+            <p>Search the NIST vulnerability database live: newest CVEs first, CVSS 4/3/2, CISA known-exploited flag, CWE, affected products, references, CSV/JSON export and shareable filters – on any screen.</p>
+            <div class="meta"><b>Security</b><span>·</span><span>Data: NVD API</span></div>
+          </div>
+        </a>
+        <a class="card reveal" href="liquid-glass.html">
+          <div class="thumb"><img src="assets/img/liquid-glass.webp" alt="Liquid Glass playground" width="1200" height="750" loading="lazy"></div>
+          <div class="body">
+            <h3>💧 Liquid Glass</h3>
+            <p>An early WebGL recreation of Apple’s Liquid Glass, built right when it came out – now optimized: drag the 🐼 pill, stretch it, tweak refraction and opacity.</p>
+            <div class="meta"><b>UI experiment</b><span>·</span><span>WebGL</span></div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="pages">
+    <div class="wrap">
+      <p class="eyebrow">Index</p>
+      <h2>All pages</h2>
+      <ul class="list">
+        <li><a href="kotoba.html"><span class="ic"><img src="kotoba-icon-192.png" alt=""></span><span><span class="t">Kotoba</span><br><span class="d">Learn Japanese – standalone app</span></span><span class="u">/kotoba.html</span></a></li>
+        <li><a href="cyba-delta/"><span class="ic"><img src="assets/img/cyba-delta-icon.png" alt=""></span><span><span class="t">CYBA Delta</span><br><span class="d">SOC automation – live demo</span></span><span class="u">/cyba-delta/</span></a></li>
+        <li><a href="cve.html"><span class="ic">🚨</span><span><span class="t">CVE Table</span><br><span class="d">Vulnerability lookup</span></span><span class="u">/cve.html</span></a></li>
+        <li><a href="liquid-glass.html"><span class="ic">💧</span><span><span class="t">Liquid Glass</span><br><span class="d">UI playground</span></span><span class="u">/liquid-glass.html</span></a></li>
+        <li><a href="https://github.com/cyberpanda" rel="noopener"><span class="ic">🐙</span><span><span class="t">GitHub</span><br><span class="d">All repositories</span></span><span class="u">github.com/cyberpanda</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap about">
+      <div class="reveal"><h3>🐼 About</h3><p>This is my personal playground. I build these projects with AI in my free time, purely as a hobby, and share them so anyone can try them, learn from them and join in.</p></div>
+      <div class="reveal"><h3>🤝 Contribute</h3><p>Every project is open source on GitHub. Found a bug or have an idea? Open an issue or send a pull request – contributions of any size are welcome.</p></div>
+      <div class="reveal"><h3>🔒 Privacy</h3><p>No cookies, no analytics, no trackers. Apps keep their data on your device. Some projects load public data or libraries from third parties, as noted on each page.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Panda 🐼 · hobby projects · open source</span>
+    <a href="https://github.com/cyberpanda" rel="noopener">GitHub</a>
+    <a href="https://x.com/realcyberpanda" rel="noopener">𝕏 @realcyberpanda</a>
+    <a href="https://github.com/cyberpanda/cyberpanda.github.io" rel="noopener">Contribute to this site</a>
   </div>
-
-  <script>
-    // Matrix effect script
-    const canvas = document.getElementById('matrix');
-    const ctx = canvas.getContext('2d');
-
-    let width, height;
-    function resize() {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    const letters = '01🀄🐼'.repeat(20).split('');
-    const fontSize = 20;
-    const columns = Math.floor(width / fontSize);
-
-    const drops = Array(columns).fill(0);
-
-    function draw() {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-      ctx.fillRect(0, 0, width, height);
-
-      ctx.fillStyle = '#00ff91';
-      ctx.font = fontSize + 'px Share Tech Mono';
-
-      for(let i = 0; i < drops.length; i++) {
-        const text = letters[Math.floor(Math.random() * letters.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-        if (drops[i] * fontSize > height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
-      }
-    }
-
-    setInterval(draw, 50);
-
-    // Quotes array (anonymous, no attribution)
-    const quotes = [
-      "There is no spoon.",
-      "Welcome to the desert of the real.",
-      "Free your mind.",
-      "The Matrix has you.",
-      "Unfortunately, no one can be told what the Matrix is.",
-      "I know kung fu.",
-      "Choice is an illusion created between those with power and those without.",
-      "Wake up, Neo...",
-      "Ignorance is bliss, until it’s not.",
-      "Don't think you are, know you are.",
-      "What is real? How do you define real?",
-      "The body cannot live without the mind.",
-      "You take the blue pill — the story ends."
-    ];
-
-    const typedTextSpan = document.querySelector('.typed-text');
-
-    let currentQuoteIndex = 0;
-    let charIndex = 0;
-    let typing = true;
-    let timeout;
-
-    function typeQuote() {
-      const quote = quotes[currentQuoteIndex];
-      if (typing) {
-        if (charIndex <= quote.length) {
-          typedTextSpan.textContent = quote.substring(0, charIndex);
-          charIndex++;
-          timeout = setTimeout(typeQuote, 80 + Math.random() * 100);
-        } else {
-          typing = false;
-          timeout = setTimeout(typeQuote, 2000);
-        }
-      } else {
-        if (charIndex >= 0) {
-          typedTextSpan.textContent = quote.substring(0, charIndex);
-          charIndex--;
-          timeout = setTimeout(typeQuote, 40 + Math.random() * 60);
-        } else {
-          typing = true;
-          currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
-          timeout = setTimeout(typeQuote, 500);
-        }
-      }
-    }
-
-    typeQuote();
-  </script>
+</footer>
+<script src="assets/js/site.js" defer></script>
 </body>
 </html>

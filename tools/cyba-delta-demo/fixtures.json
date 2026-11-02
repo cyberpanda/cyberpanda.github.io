@@ -1,0 +1,2333 @@
+{
+"meta": {
+"product": "CYBA Delta",
+"component": "CybaKawa",
+"version": "1.9.0",
+"store": {
+"kind": "demo",
+"keeps_data": true,
+"single_instance": true
+},
+"capabilities": [
+"workflows",
+"start-stop",
+"templates",
+"apps",
+"openapi-import",
+"custom-connectors",
+"runs",
+"products",
+"webhooks",
+"spaces",
+"customer-profiles",
+"channels",
+"soar-connector",
+"ingest"
+]
+},
+"templates_raw": [
+{
+"key": "notify_critical",
+"title": "Tell the team about critical alerts",
+"summary": "A critical alert arrives, and the channel that customer uses hears about it.",
+"category": "routine",
+"variables": [
+{
+"name": "room",
+"label": "Room or channel",
+"type": "string",
+"default": "soc"
+}
+],
+"workflow": {
+"name": "Notify on critical alert",
+"nodes": [
+{
+"id": "t1",
+"type": "trigger",
+"trigger": "alert",
+"position": {
+"x": 80,
+"y": 160
+}
+},
+{
+"id": "c1",
+"type": "condition",
+"position": {
+"x": 300,
+"y": 160
+},
+"conditions": [
+{
+"field": "event.alert.severity",
+"op": "equals",
+"value": "critical"
+}
+]
+},
+{
+"id": "a1",
+"type": "action",
+"channel": "chat",
+"verb": "post",
+"position": {
+"x": 540,
+"y": 90
+},
+"arguments": {
+"title": "Critical: {{ event.alert.title }}",
+"text": "Host {{ event.host.name }} - please take a look.",
+"room": "{{room}}"
+}
+},
+{
+"id": "e1",
+"type": "end",
+"position": {
+"x": 780,
+"y": 160
+}
+}
+],
+"edges": [
+{
+"source": "t1",
+"target": "c1"
+},
+{
+"source": "c1",
+"target": "a1",
+"branch": "true"
+},
+{
+"source": "c1",
+"target": "e1",
+"branch": "false"
+},
+{
+"source": "a1",
+"target": "e1"
+}
+]
+}
+},
+{
+"key": "ticket_for_case",
+"title": "Open a ticket when a case starts",
+"summary": "Every case gets a ticket, in whatever system that customer keeps.",
+"category": "routine",
+"variables": [
+{
+"name": "group",
+"label": "Assign to group",
+"type": "string",
+"default": "SOC"
+}
+],
+"workflow": {
+"name": "Ticket for new case",
+"nodes": [
+{
+"id": "t1",
+"type": "trigger",
+"trigger": "alert",
+"position": {
+"x": 80,
+"y": 160
+}
+},
+{
+"id": "a1",
+"type": "action",
+"channel": "ticket",
+"verb": "open",
+"position": {
+"x": 340,
+"y": 160
+},
+"arguments": {
+"title": "{{ event.alert.title }}",
+"body": "Opened from {{ event.source.name }}.",
+"group": "{{group}}"
+}
+},
+{
+"id": "a2",
+"type": "action",
+"channel": "mail",
+"verb": "send",
+"position": {
+"x": 600,
+"y": 160
+},
+"continue_on_error": true,
+"arguments": {
+"to": "{{ event.customer.email }}",
+"subject": "We are on it: {{ event.alert.title }}",
+"body": "Your ticket {{ steps.a1.ticket }} is with our team."
+}
+},
+{
+"id": "e1",
+"type": "end",
+"position": {
+"x": 850,
+"y": 160
+}
+}
+],
+"edges": [
+{
+"source": "t1",
+"target": "a1"
+},
+{
+"source": "a1",
+"target": "a2"
+},
+{
+"source": "a2",
+"target": "e1"
+}
+]
+}
+},
+{
+"key": "daily_digest",
+"title": "Send a calm daily summary",
+"summary": "Once a day, one message with the numbers. No pager, no noise.",
+"category": "routine",
+"variables": [
+{
+"name": "hour",
+"label": "Time of day",
+"type": "string",
+"default": "08:00"
+},
+{
+"name": "recipient",
+"label": "Send to",
+"type": "string",
+"default": "soc@example.com"
+}
+],
+"workflow": {
+"name": "Daily digest",
+"nodes": [
+{
+"id": "t1",
+"type": "trigger",
+"trigger": "schedule",
+"cron": "0 8 * * *",
+"position": {
+"x": 80,
+"y": 160
+}
+},
+{
+"id": "a1",
+"type": "action",
+"channel": "mail",
+"verb": "send",
+"position": {
+"x": 360,
+"y": 160
+},
+"arguments": {
+"to": "{{recipient}}",
+"subject": "Daily summary",
+"body": "Open alerts: {{ event.open_alerts }}. Have a good shift."
+}
+},
+{
+"id": "e1",
+"type": "end",
+"position": {
+"x": 640,
+"y": 160
+}
+}
+],
+"edges": [
+{
+"source": "t1",
+"target": "a1"
+},
+{
+"source": "a1",
+"target": "e1"
+}
+]
+}
+},
+{
+"key": "triage_then_ask",
+"title": "Ask before acting on a host",
+"summary": "Check the alert, then ask the channel first. People stay in the loop.",
+"category": "routine",
+"variables": [],
+"workflow": {
+"name": "Ask before isolating",
+"nodes": [
+{
+"id": "t1",
+"type": "trigger",
+"trigger": "alert",
+"position": {
+"x": 80,
+"y": 160
+}
+},
+{
+"id": "c1",
+"type": "condition",
+"position": {
+"x": 300,
+"y": 160
+},
+"mode": "all",
+"conditions": [
+{
+"field": "event.alert.severity",
+"op": "in",
+"value": [
+"high",
+"critical"
+]
+},
+{
+"field": "event.host.name",
+"op": "exists",
+"value": null
+}
+]
+},
+{
+"id": "a1",
+"type": "action",
+"channel": "chat",
+"verb": "post",
+"position": {
+"x": 560,
+"y": 90
+},
+"arguments": {
+"text": "{{ event.host.name }} looks affected. Isolate it? Reply in the thread.",
+"title": "{{ event.alert.title }}"
+}
+},
+{
+"id": "e1",
+"type": "end",
+"position": {
+"x": 820,
+"y": 160
+}
+}
+],
+"edges": [
+{
+"source": "t1",
+"target": "c1"
+},
+{
+"source": "c1",
+"target": "a1",
+"branch": "true"
+},
+{
+"source": "c1",
+"target": "e1",
+"branch": "false"
+},
+{
+"source": "a1",
+"target": "e1"
+}
+]
+}
+}
+],
+"apps_full": [
+{
+"name": "mail",
+"title": "Mail",
+"version": "1.0.0",
+"side": "respond",
+"category": "notify",
+"channel": "mail",
+"description": "Send mail through an SMTP relay or a mail gateway.",
+"base_url": "",
+"auth": {
+"type": "basic"
+},
+"actions": [
+{
+"name": "send_mail",
+"verb": "send",
+"description": "Send a message to one or more recipients.",
+"request": {
+"method": "POST",
+"path": "/messages"
+},
+"parameters": [
+{
+"name": "to",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "to",
+"description": "Recipient, comma separated"
+},
+{
+"name": "subject",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "subject"
+},
+{
+"name": "body",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "text"
+},
+{
+"name": "importance",
+"type": "string",
+"default": "normal",
+"location": "body",
+"source_name": "importance"
+}
+]
+}
+]
+},
+{
+"name": "chat",
+"title": "Chat and Talk",
+"version": "1.0.0",
+"side": "respond",
+"category": "notify",
+"channel": "chat",
+"description": "Post messages to a chat room over an incoming webhook.",
+"base_url": "",
+"auth": {
+"type": "none"
+},
+"actions": [
+{
+"name": "post_message",
+"verb": "post",
+"description": "Post a message into a room.",
+"request": {
+"method": "POST",
+"path": ""
+},
+"parameters": [
+{
+"name": "text",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "text"
+},
+{
+"name": "room",
+"type": "string",
+"location": "body",
+"source_name": "room"
+},
+{
+"name": "title",
+"type": "string",
+"location": "body",
+"source_name": "title"
+}
+]
+}
+]
+},
+{
+"name": "teams",
+"title": "Teams",
+"version": "1.0.0",
+"side": "respond",
+"category": "notify",
+"channel": "chat",
+"description": "Post an adaptive message card to a Teams channel webhook.",
+"base_url": "",
+"auth": {
+"type": "none"
+},
+"actions": [
+{
+"name": "post_card",
+"verb": "post",
+"description": "Post a message card to a channel.",
+"request": {
+"method": "POST",
+"path": ""
+},
+"parameters": [
+{
+"name": "title",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "title"
+},
+{
+"name": "text",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "text"
+},
+{
+"name": "theme_color",
+"type": "string",
+"default": "35CABE",
+"location": "body",
+"source_name": "themeColor"
+}
+]
+}
+]
+},
+{
+"name": "ticket",
+"title": "Ticket System",
+"version": "1.0.0",
+"side": "respond",
+"category": "ticket",
+"channel": "ticket",
+"description": "Create and close tickets in a helpdesk that speaks REST.",
+"base_url": "",
+"auth": {
+"type": "bearer"
+},
+"actions": [
+{
+"name": "create_ticket",
+"verb": "open",
+"description": "Open a ticket.",
+"reverts": "close_ticket",
+"request": {
+"method": "POST",
+"path": "/tickets"
+},
+"parameters": [
+{
+"name": "title",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "title"
+},
+{
+"name": "body",
+"type": "string",
+"location": "body",
+"source_name": "body"
+},
+{
+"name": "group",
+"type": "string",
+"location": "body",
+"source_name": "group"
+},
+{
+"name": "priority",
+"type": "integer",
+"default": 3,
+"location": "body",
+"source_name": "priority"
+}
+]
+},
+{
+"name": "close_ticket",
+"verb": "close",
+"description": "Close a ticket.",
+"request": {
+"method": "PUT",
+"path": "/tickets/{id}"
+},
+"parameters": [
+{
+"name": "id",
+"type": "string",
+"required": true,
+"location": "path",
+"source_name": "id"
+},
+{
+"name": "note",
+"type": "string",
+"location": "body",
+"source_name": "note"
+}
+]
+},
+{
+"name": "comment_ticket",
+"verb": "comment",
+"description": "Add a comment to a ticket.",
+"request": {
+"method": "POST",
+"path": "/tickets/{id}/comments"
+},
+"parameters": [
+{
+"name": "id",
+"type": "string",
+"required": true,
+"location": "path",
+"source_name": "id"
+},
+{
+"name": "text",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "text"
+}
+]
+}
+]
+},
+{
+"name": "zammad",
+"title": "Zammad",
+"version": "1.0.0",
+"side": "respond",
+"category": "ticket",
+"channel": "ticket",
+"description": "Open, comment and close tickets in Zammad.",
+"base_url": "",
+"auth": {
+"type": "bearer"
+},
+"actions": [
+{
+"name": "create_ticket",
+"verb": "open",
+"description": "Open a ticket.",
+"reverts": "close_ticket",
+"request": {
+"method": "POST",
+"path": "/api/v1/tickets"
+},
+"parameters": [
+{
+"name": "title",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "title"
+},
+{
+"name": "body",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "article_body"
+},
+{
+"name": "group",
+"type": "string",
+"default": "Users",
+"location": "body",
+"source_name": "group"
+},
+{
+"name": "customer",
+"type": "string",
+"location": "body",
+"source_name": "customer_id"
+},
+{
+"name": "priority",
+"type": "string",
+"default": "2 normal",
+"location": "body",
+"source_name": "priority"
+}
+]
+},
+{
+"name": "comment_ticket",
+"verb": "comment",
+"description": "Add an article to a ticket.",
+"request": {
+"method": "POST",
+"path": "/api/v1/ticket_articles"
+},
+"parameters": [
+{
+"name": "ticket",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "ticket_id"
+},
+{
+"name": "body",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "body"
+},
+{
+"name": "internal",
+"type": "boolean",
+"default": true,
+"location": "body",
+"source_name": "internal"
+}
+]
+},
+{
+"name": "close_ticket",
+"verb": "close",
+"description": "Close a ticket.",
+"request": {
+"method": "PUT",
+"path": "/api/v1/tickets/{id}"
+},
+"parameters": [
+{
+"name": "id",
+"type": "string",
+"required": true,
+"location": "path",
+"source_name": "id"
+},
+{
+"name": "state",
+"type": "string",
+"default": "closed",
+"location": "body",
+"source_name": "state"
+}
+]
+}
+]
+},
+{
+"name": "jira",
+"title": "Jira",
+"version": "1.0.0",
+"side": "respond",
+"category": "ticket",
+"channel": "ticket",
+"description": "Create and transition issues in Jira.",
+"base_url": "",
+"auth": {
+"type": "basic"
+},
+"actions": [
+{
+"name": "create_issue",
+"verb": "open",
+"description": "Create an issue.",
+"reverts": "close_issue",
+"request": {
+"method": "POST",
+"path": "/rest/api/3/issue"
+},
+"parameters": [
+{
+"name": "project",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "project"
+},
+{
+"name": "title",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "summary"
+},
+{
+"name": "body",
+"type": "string",
+"location": "body",
+"source_name": "description"
+},
+{
+"name": "issue_type",
+"type": "string",
+"default": "Task",
+"location": "body",
+"source_name": "issuetype"
+},
+{
+"name": "priority",
+"type": "string",
+"location": "body",
+"source_name": "priority"
+}
+]
+},
+{
+"name": "comment_issue",
+"verb": "comment",
+"description": "Add a comment.",
+"request": {
+"method": "POST",
+"path": "/rest/api/3/issue/{key}/comment"
+},
+"parameters": [
+{
+"name": "key",
+"type": "string",
+"required": true,
+"location": "path",
+"source_name": "key"
+},
+{
+"name": "body",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "body"
+}
+]
+},
+{
+"name": "close_issue",
+"verb": "close",
+"description": "Move an issue to done.",
+"request": {
+"method": "POST",
+"path": "/rest/api/3/issue/{key}/transitions"
+},
+"parameters": [
+{
+"name": "key",
+"type": "string",
+"required": true,
+"location": "path",
+"source_name": "key"
+},
+{
+"name": "transition",
+"type": "string",
+"default": "31",
+"location": "body",
+"source_name": "transition"
+}
+]
+}
+]
+},
+{
+"name": "nextcloud_talk",
+"title": "Nextcloud Talk",
+"version": "1.0.0",
+"side": "respond",
+"category": "notify",
+"channel": "chat",
+"description": "Post into a Nextcloud Talk room.",
+"base_url": "",
+"auth": {
+"type": "basic"
+},
+"actions": [
+{
+"name": "post_message",
+"verb": "post",
+"description": "Post a message into a room.",
+"request": {
+"method": "POST",
+"path": "/ocs/v2.php/apps/spreed/api/v1/chat/{room}"
+},
+"parameters": [
+{
+"name": "room",
+"type": "string",
+"required": true,
+"location": "path",
+"source_name": "room"
+},
+{
+"name": "text",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "message"
+},
+{
+"name": "reply_to",
+"type": "integer",
+"location": "body",
+"source_name": "replyTo"
+}
+]
+}
+]
+},
+{
+"name": "webex",
+"title": "Cisco Webex",
+"version": "1.0.0",
+"side": "respond",
+"category": "notify",
+"channel": "chat",
+"description": "Post into a Webex space.",
+"base_url": "https://webexapis.com",
+"auth": {
+"type": "bearer"
+},
+"actions": [
+{
+"name": "post_message",
+"verb": "post",
+"description": "Post a message into a space.",
+"request": {
+"method": "POST",
+"path": "/v1/messages"
+},
+"parameters": [
+{
+"name": "room",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "roomId"
+},
+{
+"name": "text",
+"type": "string",
+"required": true,
+"location": "body",
+"source_name": "markdown"
+}
+]
+}
+]
+},
+{
+"name": "webhook_in",
+"title": "Inbound Webhook",
+"version": "1.0.0",
+"side": "normalize",
+"category": "ingest",
+"channel": "webhook",
+"description": "Accept events from any sender and map them with a profile.",
+"auth": {
+"type": "api_key",
+"in": "header",
+"name": "X-API-Key"
+},
+"actions": [
+{
+"name": "receive_event",
+"verb": "receive",
+"description": "Take a raw event and map it to the unified schema.",
+"parameters": [
+{
+"name": "profile",
+"type": "string",
+"required": true,
+"description": "Mapping profile key"
+}
+]
+}
+]
+},
+{
+"name": "wazuh",
+"title": "Wazuh",
+"version": "1.0.0",
+"side": "normalize",
+"category": "ingest",
+"channel": "siem",
+"description": "Take alerts from Wazuh and map them.",
+"auth": {
+"type": "api_key",
+"in": "header",
+"name": "X-API-Key"
+},
+"actions": [
+{
+"name": "receive_event",
+"verb": "receive",
+"description": "Take an alert and map it to the unified schema.",
+"parameters": [
+{
+"name": "profile",
+"type": "string",
+"required": true,
+"description": "Mapping profile key"
+}
+]
+}
+]
+},
+{
+"name": "splunk",
+"title": "Splunk",
+"version": "1.0.0",
+"side": "normalize",
+"category": "ingest",
+"channel": "siem",
+"description": "Take notable events from Splunk and map them.",
+"auth": {
+"type": "bearer"
+},
+"actions": [
+{
+"name": "receive_event",
+"verb": "receive",
+"description": "Take a notable event and map it to the unified schema.",
+"parameters": [
+{
+"name": "profile",
+"type": "string",
+"required": true,
+"description": "Mapping profile key"
+}
+]
+}
+]
+}
+],
+"workflows_full": [
+{
+"name": "Notify on critical alert",
+"nodes": [
+{
+"id": "t1",
+"type": "trigger",
+"trigger": "alert",
+"position": {
+"x": 80,
+"y": 160
+}
+},
+{
+"id": "c1",
+"type": "condition",
+"position": {
+"x": 300,
+"y": 160
+},
+"conditions": [
+{
+"field": "event.alert.severity",
+"op": "equals",
+"value": "critical"
+}
+]
+},
+{
+"id": "a1",
+"type": "action",
+"channel": "chat",
+"verb": "post",
+"position": {
+"x": 540,
+"y": 90
+},
+"arguments": {
+"title": "Critical: {{ event.alert.title }}",
+"text": "Host {{ event.host.name }} - please take a look.",
+"room": "soc"
+}
+},
+{
+"id": "e1",
+"type": "end",
+"position": {
+"x": 780,
+"y": 160
+}
+}
+],
+"edges": [
+{
+"source": "t1",
+"target": "c1"
+},
+{
+"source": "c1",
+"target": "a1",
+"branch": "true"
+},
+{
+"source": "c1",
+"target": "e1",
+"branch": "false"
+},
+{
+"source": "a1",
+"target": "e1"
+}
+],
+"template": "notify_critical",
+"state": "running",
+"id": "526f192274db",
+"updated_at": 1793659853.7719803
+},
+{
+"name": "Ticket for new case",
+"nodes": [
+{
+"id": "t1",
+"type": "trigger",
+"trigger": "alert",
+"position": {
+"x": 80,
+"y": 160
+}
+},
+{
+"id": "a1",
+"type": "action",
+"channel": "ticket",
+"verb": "open",
+"position": {
+"x": 340,
+"y": 160
+},
+"arguments": {
+"title": "{{ event.alert.title }}",
+"body": "Opened from {{ event.source.name }}.",
+"group": "SOC"
+}
+},
+{
+"id": "a2",
+"type": "action",
+"channel": "mail",
+"verb": "send",
+"position": {
+"x": 600,
+"y": 160
+},
+"continue_on_error": true,
+"arguments": {
+"to": "{{ event.customer.email }}",
+"subject": "We are on it: {{ event.alert.title }}",
+"body": "Your ticket {{ steps.a1.ticket }} is with our team."
+}
+},
+{
+"id": "e1",
+"type": "end",
+"position": {
+"x": 850,
+"y": 160
+}
+}
+],
+"edges": [
+{
+"source": "t1",
+"target": "a1"
+},
+{
+"source": "a1",
+"target": "a2"
+},
+{
+"source": "a2",
+"target": "e1"
+}
+],
+"template": "ticket_for_case",
+"state": "running",
+"id": "c51694a26dc1",
+"updated_at": 1793659853.7721336
+},
+{
+"name": "Daily digest",
+"nodes": [
+{
+"id": "t1",
+"type": "trigger",
+"trigger": "schedule",
+"cron": "0 8 * * *",
+"position": {
+"x": 80,
+"y": 160
+}
+},
+{
+"id": "a1",
+"type": "action",
+"channel": "mail",
+"verb": "send",
+"position": {
+"x": 360,
+"y": 160
+},
+"arguments": {
+"to": "soc@example.com",
+"subject": "Daily summary",
+"body": "Open alerts: {{ event.open_alerts }}. Have a good shift."
+}
+},
+{
+"id": "e1",
+"type": "end",
+"position": {
+"x": 640,
+"y": 160
+}
+}
+],
+"edges": [
+{
+"source": "t1",
+"target": "a1"
+},
+{
+"source": "a1",
+"target": "e1"
+}
+],
+"template": "daily_digest",
+"state": "stopped",
+"id": "34564e907f0e",
+"updated_at": 1793659853.7716784
+},
+{
+"name": "Ask before isolating",
+"nodes": [
+{
+"id": "t1",
+"type": "trigger",
+"trigger": "alert",
+"position": {
+"x": 80,
+"y": 160
+}
+},
+{
+"id": "c1",
+"type": "condition",
+"position": {
+"x": 300,
+"y": 160
+},
+"mode": "all",
+"conditions": [
+{
+"field": "event.alert.severity",
+"op": "in",
+"value": [
+"high",
+"critical"
+]
+},
+{
+"field": "event.host.name",
+"op": "exists",
+"value": null
+}
+]
+},
+{
+"id": "a1",
+"type": "action",
+"channel": "chat",
+"verb": "post",
+"position": {
+"x": 560,
+"y": 90
+},
+"arguments": {
+"text": "{{ event.host.name }} looks affected. Isolate it? Reply in the thread.",
+"title": "{{ event.alert.title }}"
+}
+},
+{
+"id": "e1",
+"type": "end",
+"position": {
+"x": 820,
+"y": 160
+}
+}
+],
+"edges": [
+{
+"source": "t1",
+"target": "c1"
+},
+{
+"source": "c1",
+"target": "a1",
+"branch": "true"
+},
+{
+"source": "c1",
+"target": "e1",
+"branch": "false"
+},
+{
+"source": "a1",
+"target": "e1"
+}
+],
+"template": "triage_then_ask",
+"state": "stopped",
+"id": "0f9e19277eaf",
+"updated_at": 1793659853.7717712
+}
+],
+"bindings": [
+{
+"customer": "acme",
+"side": "respond",
+"channel": "ticket",
+"app": "zammad",
+"config": {
+"defaults": {
+"group": "SOC"
+}
+},
+"active": true
+},
+{
+"customer": "acme",
+"side": "respond",
+"channel": "chat",
+"app": "teams",
+"config": {},
+"active": true
+},
+{
+"customer": "acme",
+"side": "respond",
+"channel": "mail",
+"app": "mail",
+"config": {},
+"active": true
+},
+{
+"customer": "globex",
+"side": "respond",
+"channel": "ticket",
+"app": "jira",
+"config": {
+"defaults": {
+"project": "SEC"
+}
+},
+"active": true
+},
+{
+"customer": "globex",
+"side": "respond",
+"channel": "chat",
+"app": "webex",
+"config": {},
+"active": true
+},
+{
+"customer": "globex",
+"side": "normalize",
+"channel": "siem",
+"app": "splunk",
+"config": {
+"source_name": "splunk-globex"
+},
+"active": true
+},
+{
+"customer": "*",
+"side": "respond",
+"channel": "mail",
+"app": "mail",
+"config": {},
+"active": true
+},
+{
+"customer": "initech",
+"side": "respond",
+"channel": "chat",
+"app": "nextcloud_talk",
+"config": {},
+"active": true
+},
+{
+"customer": "initech",
+"side": "normalize",
+"channel": "webhook",
+"app": "webhook_in",
+"config": {
+"source_name": "initech-edr"
+},
+"active": true
+},
+{
+"customer": "acme",
+"side": "normalize",
+"channel": "siem",
+"app": "wazuh",
+"config": {
+"source_name": "wazuh-acme-prod",
+"key_hash": "b4328035f5330bb63446319e8b37c4781da5d7d187781bc26b40c2e815e9de49"
+},
+"active": true
+}
+],
+"runs": [
+{
+"workflow_id": "0f9e19277eaf",
+"workflow": "Ask before isolating",
+"status": "completed",
+"dry_run": true,
+"errors": [],
+"steps": [
+{
+"node": "c1",
+"type": "condition",
+"status": "ok",
+"result": false
+},
+{
+"node": "e1",
+"type": "end",
+"status": "ok"
+}
+],
+"id": "fb1993a80b39",
+"created_at": 1793659853.7759366
+},
+{
+"workflow_id": "0f9e19277eaf",
+"workflow": "Ask before isolating",
+"status": "completed",
+"dry_run": true,
+"errors": [],
+"steps": [
+{
+"node": "c1",
+"type": "condition",
+"status": "ok",
+"result": true
+},
+{
+"node": "a1",
+"type": "action",
+"status": "ok",
+"result": {
+"ok": true,
+"detail": "dry run",
+"arguments": {
+"text": "vpn-gw-01 looks affected. Isolate it? Reply in the thread.",
+"title": "Brute force on vpn-gw-01"
+}
+}
+},
+{
+"node": "e1",
+"type": "end",
+"status": "ok"
+}
+],
+"id": "6173e29fca8e",
+"created_at": 1793659853.7758422
+},
+{
+"workflow_id": "34564e907f0e",
+"workflow": "Daily digest",
+"status": "completed",
+"dry_run": true,
+"errors": [],
+"steps": [
+{
+"node": "a1",
+"type": "action",
+"status": "ok",
+"result": {
+"ok": true,
+"detail": "dry run",
+"arguments": {
+"to": "soc@example.com",
+"subject": "Daily summary",
+"body": "Open alerts: . Have a good shift."
+}
+}
+},
+{
+"node": "e1",
+"type": "end",
+"status": "ok"
+}
+],
+"id": "851b6d1fd2b5",
+"created_at": 1793659853.775742
+},
+{
+"workflow_id": "34564e907f0e",
+"workflow": "Daily digest",
+"status": "completed",
+"dry_run": true,
+"errors": [],
+"steps": [
+{
+"node": "a1",
+"type": "action",
+"status": "ok",
+"result": {
+"ok": true,
+"detail": "dry run",
+"arguments": {
+"to": "soc@example.com",
+"subject": "Daily summary",
+"body": "Open alerts: . Have a good shift."
+}
+}
+},
+{
+"node": "e1",
+"type": "end",
+"status": "ok"
+}
+],
+"id": "6bc8275d0f57",
+"created_at": 1793659853.775666
+},
+{
+"workflow_id": "c51694a26dc1",
+"workflow": "Ticket for new case",
+"status": "completed",
+"dry_run": true,
+"errors": [],
+"steps": [
+{
+"node": "a1",
+"type": "action",
+"status": "ok",
+"result": {
+"ok": true,
+"detail": "dry run",
+"arguments": {
+"title": "Brute force on vpn-gw-01",
+"body": "Opened from .",
+"group": "SOC"
+}
+}
+},
+{
+"node": "a2",
+"type": "action",
+"status": "ok",
+"result": {
+"ok": true,
+"detail": "dry run",
+"arguments": {
+"to": null,
+"subject": "We are on it: Brute force on vpn-gw-01",
+"body": "Your ticket  is with our team."
+}
+}
+},
+{
+"node": "e1",
+"type": "end",
+"status": "ok"
+}
+],
+"id": "1b077b9c9f35",
+"created_at": 1793659853.7755804
+},
+{
+"workflow_id": "c51694a26dc1",
+"workflow": "Ticket for new case",
+"status": "completed",
+"dry_run": true,
+"errors": [],
+"steps": [
+{
+"node": "a1",
+"type": "action",
+"status": "ok",
+"result": {
+"ok": true,
+"detail": "dry run",
+"arguments": {
+"title": "Brute force on vpn-gw-01",
+"body": "Opened from .",
+"group": "SOC"
+}
+}
+},
+{
+"node": "a2",
+"type": "action",
+"status": "ok",
+"result": {
+"ok": true,
+"detail": "dry run",
+"arguments": {
+"to": null,
+"subject": "We are on it: Brute force on vpn-gw-01",
+"body": "Your ticket  is with our team."
+}
+}
+},
+{
+"node": "e1",
+"type": "end",
+"status": "ok"
+}
+],
+"id": "d3afacd68922",
+"created_at": 1793659853.7754838
+},
+{
+"workflow_id": "526f192274db",
+"workflow": "Notify on critical alert",
+"status": "completed",
+"dry_run": true,
+"errors": [],
+"steps": [
+{
+"node": "c1",
+"type": "condition",
+"status": "ok",
+"result": false
+},
+{
+"node": "e1",
+"type": "end",
+"status": "ok"
+}
+],
+"id": "7a5767eafb7b",
+"created_at": 1793659853.7753856
+},
+{
+"workflow_id": "526f192274db",
+"workflow": "Notify on critical alert",
+"status": "completed",
+"dry_run": true,
+"errors": [],
+"steps": [
+{
+"node": "c1",
+"type": "condition",
+"status": "ok",
+"result": true
+},
+{
+"node": "a1",
+"type": "action",
+"status": "ok",
+"result": {
+"ok": true,
+"detail": "dry run",
+"arguments": {
+"title": "Critical: Brute force on vpn-gw-01",
+"text": "Host vpn-gw-01 - please take a look.",
+"room": "soc"
+}
+}
+},
+{
+"node": "e1",
+"type": "end",
+"status": "ok"
+}
+],
+"id": "60ba2d031572",
+"created_at": 1793659853.7752812
+}
+],
+"products": [
+{
+"name": "cybaban",
+"title": "CybaBan",
+"role": "Shifts and handover",
+"summary": "Who is on, what is open, and what the next shift needs to know.",
+"url": "/duty/",
+"compose_profile": "duty",
+"services": [
+"cybaban-backend",
+"cybaban-web"
+],
+"sends_events": false,
+"docs": "products/cybaban/README.md",
+"up": false,
+"start_hint": "make cybaban-start"
+},
+{
+"name": "cybamado",
+"title": "CybaMado",
+"role": "The customer portal",
+"summary": "What we do for a customer, in their words, and their word before we act.",
+"url": "/portal/",
+"compose_profile": "portal",
+"services": [
+"cybamado-backend",
+"cybamado-web"
+],
+"sends_events": false,
+"docs": "products/cybamado/README.md",
+"up": false,
+"start_hint": "make cybamado-start"
+},
+{
+"name": "cybasoa",
+"title": "CybaSoa",
+"role": "Security operations",
+"summary": "Alerts, cases, and response that always keeps a second pair of eyes.",
+"url": "/soc/",
+"compose_profile": "soc",
+"services": [
+"soa-postgres",
+"soa-redis",
+"cybasoa-backend",
+"cybasoa-web"
+],
+"sends_events": true,
+"docs": "products/cybasoa/README.md",
+"up": false,
+"start_hint": "make cybasoa-start"
+}
+],
+"spaces": [
+{
+"name": "cyba-delta",
+"title": "CYBA Delta",
+"wordmark": [
+"CYBA",
+"Delta"
+],
+"role": "Automation and integration",
+"summary": "Flows, apps, and the roof over the family.",
+"url": "/",
+"logo": "assets/logos/cyba-delta.png",
+"logo_style": "lockup",
+"kind": "roof",
+"up": true,
+"start_hint": ""
+},
+{
+"name": "cybakawa",
+"title": "CybaKawa",
+"wordmark": [
+"Cyba",
+"Kawa"
+],
+"role": "The flow engine",
+"summary": "What actually carries a flow from one step to the next.",
+"url": "/api/docs",
+"logo": "assets/logos/cybakawa.png",
+"logo_style": "lockup",
+"kind": "engine",
+"up": true,
+"start_hint": ""
+},
+{
+"name": "cybaban",
+"title": "CybaBan",
+"wordmark": [
+"Cyba",
+"Ban"
+],
+"role": "Shifts and handover",
+"summary": "Who is on, what is open, and what the next shift needs to know.",
+"url": "/duty/",
+"logo": "assets/logos/cybaban.png",
+"logo_style": "lockup",
+"kind": "product",
+"up": false,
+"start_hint": "make cybaban-start"
+},
+{
+"name": "cybamado",
+"title": "CybaMado",
+"wordmark": [
+"Cyba",
+"Mado"
+],
+"role": "The customer portal",
+"summary": "What we do for a customer, in their words, and their word before we act.",
+"url": "/portal/",
+"logo": "assets/logos/cybamado.png",
+"logo_style": "lockup",
+"kind": "product",
+"up": false,
+"start_hint": "make cybamado-start"
+},
+{
+"name": "cybasoa",
+"title": "CybaSoa",
+"wordmark": [
+"Cyba",
+"Soa"
+],
+"role": "Security operations",
+"summary": "Alerts, cases, and response that keeps a second pair of eyes.",
+"url": "/soc/",
+"logo": "assets/logos/cybasoa.png",
+"logo_style": "lockup",
+"kind": "product",
+"up": false,
+"start_hint": "make cybasoa-start"
+}
+],
+"channels_def": {
+"normalize": [
+[
+"siem",
+"SIEM events"
+],
+[
+"edr",
+"Endpoint events"
+],
+[
+"mail",
+"Mail gateway"
+],
+[
+"cloud",
+"Cloud audit"
+],
+[
+"webhook",
+"Anything that can post"
+]
+],
+"respond": [
+[
+"ticket",
+"Tickets"
+],
+[
+"chat",
+"Chat and talk"
+],
+[
+"mail",
+"Mail"
+],
+[
+"firewall",
+"Firewall"
+],
+[
+"edr",
+"Endpoint"
+],
+[
+"identity",
+"Identity"
+]
+]
+},
+"mappings": {
+"delta": [
+{
+"target": "alert.id",
+"sources": [
+"alert.id"
+]
+},
+{
+"target": "alert.title",
+"sources": [
+"alert.title"
+]
+},
+{
+"target": "alert.severity",
+"sources": [
+"alert.severity"
+]
+},
+{
+"target": "alert.rule_id",
+"sources": [
+"alert.rule_id"
+]
+},
+{
+"target": "alert.rule_name",
+"sources": [
+"alert.rule_name"
+]
+},
+{
+"target": "alert.tags",
+"sources": [
+"alert.tags"
+]
+},
+{
+"target": "event.start",
+"sources": [
+"event.start"
+]
+},
+{
+"target": "event.end",
+"sources": [
+"event.end"
+]
+},
+{
+"target": "event.category",
+"sources": [
+"event.category"
+]
+},
+{
+"target": "event.action",
+"sources": [
+"event.action"
+]
+},
+{
+"target": "source.ip",
+"sources": [
+"source.ip"
+]
+},
+{
+"target": "source.port",
+"sources": [
+"source.port"
+]
+},
+{
+"target": "source.name",
+"sources": [
+"source.name"
+]
+},
+{
+"target": "source.type",
+"sources": [
+"source.type"
+]
+},
+{
+"target": "destination.ip",
+"sources": [
+"destination.ip"
+]
+},
+{
+"target": "destination.port",
+"sources": [
+"destination.port"
+]
+},
+{
+"target": "host.name",
+"sources": [
+"host.name"
+]
+},
+{
+"target": "host.id",
+"sources": [
+"host.id"
+]
+},
+{
+"target": "user.name",
+"sources": [
+"user.name"
+]
+},
+{
+"target": "user.domain",
+"sources": [
+"user.domain"
+]
+},
+{
+"target": "file.name",
+"sources": [
+"file.name"
+]
+},
+{
+"target": "file.hash",
+"sources": [
+"file.hash"
+]
+},
+{
+"target": "process.name",
+"sources": [
+"process.name"
+]
+},
+{
+"target": "process.command_line",
+"sources": [
+"process.command_line"
+]
+},
+{
+"target": "customer.id",
+"sources": [
+"customer.id"
+]
+},
+{
+"target": "observer.sensor",
+"sources": [
+"observer.sensor"
+]
+},
+{
+"target": "observer.location",
+"sources": [
+"observer.location"
+]
+}
+],
+"sentinel": [
+{
+"target": "alert.id",
+"sources": [
+"SystemAlertId",
+"id"
+]
+},
+{
+"target": "alert.title",
+"sources": [
+"AlertName",
+"DisplayName"
+]
+},
+{
+"target": "alert.severity",
+"sources": [
+"AlertSeverity",
+"Severity"
+]
+},
+{
+"target": "event.start",
+"sources": [
+"TimeGenerated",
+"StartTime"
+]
+},
+{
+"target": "host.name",
+"sources": [
+"CompromisedEntity",
+"Computer"
+]
+},
+{
+"target": "user.name",
+"sources": [
+"AccountName",
+"UserPrincipalName"
+]
+},
+{
+"target": "source.ip",
+"sources": [
+"IPAddress",
+"SourceIP"
+]
+}
+],
+"splunk": [
+{
+"target": "alert.id",
+"sources": [
+"event_id",
+"sid",
+"_cd"
+]
+},
+{
+"target": "alert.title",
+"sources": [
+"search_name",
+"rule_title"
+]
+},
+{
+"target": "alert.severity",
+"sources": [
+"urgency",
+"severity"
+]
+},
+{
+"target": "event.start",
+"sources": [
+"_time",
+"timestamp"
+]
+},
+{
+"target": "host.name",
+"sources": [
+"dest",
+"host",
+"dest_nt_host"
+]
+},
+{
+"target": "user.name",
+"sources": [
+"user",
+"src_user"
+]
+},
+{
+"target": "source.ip",
+"sources": [
+"src_ip",
+"src"
+]
+},
+{
+"target": "destination.ip",
+"sources": [
+"dest_ip"
+]
+},
+{
+"target": "event.category",
+"sources": [
+"eventtype",
+"search_name"
+]
+}
+],
+"wazuh": [
+{
+"target": "alert.id",
+"sources": [
+"id",
+"_id"
+]
+},
+{
+"target": "alert.title",
+"sources": [
+"rule.description"
+]
+},
+{
+"target": "alert.severity",
+"sources": [
+"rule.level"
+],
+"transform": [
+"wazuh_level"
+]
+},
+{
+"target": "alert.rule_id",
+"sources": [
+"rule.id"
+]
+},
+{
+"target": "event.start",
+"sources": [
+"timestamp",
+"@timestamp"
+]
+},
+{
+"target": "host.name",
+"sources": [
+"agent.name",
+"predecoder.hostname"
+]
+},
+{
+"target": "host.id",
+"sources": [
+"agent.id"
+]
+},
+{
+"target": "user.name",
+"sources": [
+"data.dstuser",
+"data.srcuser",
+"data.win.eventdata.targetUserName"
+]
+},
+{
+"target": "source.ip",
+"sources": [
+"data.srcip",
+"data.win.eventdata.ipAddress"
+]
+},
+{
+"target": "destination.ip",
+"sources": [
+"data.dstip"
+]
+},
+{
+"target": "event.category",
+"sources": [
+"rule.groups.0"
+]
+},
+{
+"target": "alert.rule_name",
+"sources": [
+"rule.description"
+]
+}
+],
+"webhook_in": [
+{
+"target": "alert.id",
+"sources": [
+"id",
+"alert_id",
+"uuid"
+]
+},
+{
+"target": "alert.title",
+"sources": [
+"title",
+"name",
+"message",
+"description"
+]
+},
+{
+"target": "alert.severity",
+"sources": [
+"severity",
+"level",
+"priority"
+],
+"default": "medium"
+},
+{
+"target": "event.start",
+"sources": [
+"timestamp",
+"time",
+"@timestamp"
+]
+},
+{
+"target": "host.name",
+"sources": [
+"host",
+"hostname",
+"device"
+]
+},
+{
+"target": "user.name",
+"sources": [
+"user",
+"username",
+"account"
+]
+},
+{
+"target": "source.ip",
+"sources": [
+"src_ip",
+"source_ip",
+"ip"
+]
+},
+{
+"target": "destination.ip",
+"sources": [
+"dst_ip",
+"destination_ip"
+]
+}
+]
+},
+"canonical": [
+"alert.id",
+"alert.title",
+"alert.severity",
+"alert.rule_id",
+"alert.rule_name",
+"alert.tags",
+"event.start",
+"event.end",
+"event.category",
+"event.action",
+"source.ip",
+"source.port",
+"source.name",
+"source.type",
+"destination.ip",
+"destination.port",
+"host.name",
+"host.id",
+"user.name",
+"user.domain",
+"file.name",
+"file.hash",
+"process.name",
+"process.command_line",
+"customer.id",
+"observer.sensor",
+"observer.location"
+],
+"verbs": {
+"siem": [
+"receive"
+],
+"edr": [
+"isolate",
+"release",
+"quarantine",
+"unquarantine"
+],
+"mail": [
+"send"
+],
+"cloud": [
+"receive"
+],
+"webhook": [
+"receive"
+],
+"ticket": [
+"open",
+"comment",
+"close"
+],
+"chat": [
+"post"
+],
+"firewall": [
+"block",
+"unblock"
+],
+"identity": [
+"disable",
+"enable",
+"reset",
+"logoff"
+]
+}
+}
